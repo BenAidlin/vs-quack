@@ -15,7 +15,11 @@
     "commands": [
       {
         "command": "vs-quack.runQuery",
-        "title": "Run DDB Query"
+        "title": "Run DuckDb Query"
+      },
+      {
+        "command": "vs-quack.setSettings",
+        "title": "Set DuckDb Settings"
       }
     ]
   },

@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { executeQuery } from './util/ddbClient';
 
 export function activate(context: vscode.ExtensionContext) {
-    const disposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
+    const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
         const query = await vscode.window.showInputBox({
             prompt: 'Enter your SQL query',
             placeHolder: 'SELECT * FROM table_name',
@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
 
         try {
-            const result = await executeQuery(query);
+            const result = await executeQuery(query, context.globalState.get('duckDbSettingsPath', null));
             console.log('Query result:', result);
             vscode.window.showInformationMessage(`Query result: ${JSON.stringify(result)}`);
         } catch (error: any) {
@@ -23,7 +23,29 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    context.subscriptions.push(disposable);
+	const setDuckDbSettings = vscode.commands.registerCommand('vs-quack.setSettings', async () => {
+		const fileUri = await vscode.window.showOpenDialog({
+			canSelectMany: false,
+			openLabel: 'Select Settings File',
+			canSelectFiles: true, 
+			
+			filters: {
+				'All Files': ['*']
+			}
+		});
+	
+		if (!fileUri || fileUri.length === 0) {
+			vscode.window.showWarningMessage('No file selected.');
+			return;
+		}
+	
+		const selectedPath = fileUri[0].fsPath;
+		context.globalState.update('duckDbSettingsPath', selectedPath);
+		vscode.window.showInformationMessage(`Settings file selected: ${selectedPath}`);
+	});
+	
+    context.subscriptions.push(runQueryDisposable);
+    context.subscriptions.push(setDuckDbSettings);
 }
 
 export function deactivate() {}
