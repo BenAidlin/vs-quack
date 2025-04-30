@@ -3,6 +3,7 @@
   "displayName": "vs-quack",
   "description": "DuckDB based data processing tools for vscode.",
   "version": "0.0.1",
+  "icon": "images/logo.png",
   "engines": {
     "vscode": "^1.97.0"
   },
