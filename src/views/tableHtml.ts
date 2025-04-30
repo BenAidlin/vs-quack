@@ -11,7 +11,9 @@ export function getHtmlForTable(data: any[]): string {
     const headers = Object.keys(data[0]);
 
     // Generate table headers
-    const headerRow = headers.map(header => `<th>${header}</th>`).join('');
+    const headerRow = headers
+        .map(header => `<th onclick="sortTable('${header}')">${header} &#9650;&#9660;</th>`)
+        .join('');
 
     // Generate table rows
     const rows = data
@@ -85,6 +87,40 @@ export function getHtmlForTable(data: any[]): string {
 
                             row.style.display = match ? '' : 'none';
                         }
+                    }
+
+                    // Function to sort table rows by a column
+                    let sortOrder = {};
+                    function sortTable(column) {
+                        const table = document.getElementById('resultsTable');
+                        const rows = Array.from(table.getElementsByTagName('tr')).slice(1); // Exclude header row
+                        const columnIndex = Array.from(table.getElementsByTagName('th'))
+                            .findIndex(th => th.textContent.includes(column));
+
+                        if (sortOrder[column] === undefined) {
+                            sortOrder[column] = true; // Initial sort order is ascending
+                        } else {
+                            sortOrder[column] = !sortOrder[column];
+                        }
+
+                        rows.sort((a, b) => {
+                            const cellA = a.getElementsByTagName('td')[columnIndex]?.textContent || '';
+                            const cellB = b.getElementsByTagName('td')[columnIndex]?.textContent || '';
+
+                            if (!isNaN(cellA) && !isNaN(cellB)) {
+                                return sortOrder[column]
+                                    ? Number(cellA) - Number(cellB)
+                                    : Number(cellB) - Number(cellA);
+                            }
+
+                            return sortOrder[column]
+                                ? cellA.localeCompare(cellB)
+                                : cellB.localeCompare(cellA);
+                        });
+
+                        const tbody = table.getElementsByTagName('tbody')[0];
+                        tbody.innerHTML = '';
+                        rows.forEach(row => tbody.appendChild(row));
                     }
                 </script>
             </body>
