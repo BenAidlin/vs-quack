@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { executeQuery } from './util/ddbClient';
+import { getHtmlForTable } from './views/tableHtml';
 
 export function activate(context: vscode.ExtensionContext) {
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
@@ -15,8 +16,17 @@ export function activate(context: vscode.ExtensionContext) {
 
         try {
             const result = await executeQuery(query, context.globalState.get('duckDbSettingsPath', null));
-            console.log('Query result:', result);
-            vscode.window.showInformationMessage(`Query result: ${JSON.stringify(result)}`);
+            
+			// Create and show a Webview panel to display the results
+			const panel = vscode.window.createWebviewPanel(
+				'queryResults', // Identifier for the webview
+				'Query Results', // Title of the webview
+				vscode.ViewColumn.One, // Editor column to display in
+				{ enableScripts: true } // Enable JavaScript in the webview
+			);
+
+			// Render the HTML content for the table
+			panel.webview.html = getHtmlForTable(result);
         } catch (error: any) {
             console.error('Error executing query:', error);
             vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
