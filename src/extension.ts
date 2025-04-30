@@ -24,6 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
                     case 'runQuery':
                         try {
                             const result = await executeQuery(
+								context,
                                 message.query,
                                 context.globalState.get('duckDbSettingsPath', null)
                             );
@@ -57,6 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 							panel.webview.postMessage({ command: 'queryResult' });
                         } catch (error: any) {
                             panel.webview.postMessage({ command: 'queryError', error: error.message });
+                            vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
                         }
                         break;
                 }
