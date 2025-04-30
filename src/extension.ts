@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { executeQuery } from './util/ddbClient';
 import { getQueryEditorHtml } from './views/queryEditorHtml';
+import { getResultsHtml } from './views/getResultsHtml';
 
 export function activate(context: vscode.ExtensionContext) {
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
@@ -13,9 +14,11 @@ export function activate(context: vscode.ExtensionContext) {
                 retainContextWhenHidden: true,
             }
         );
-		panel.webview.html = getQueryEditorHtml();
+        panel.webview.html = getQueryEditorHtml();
 
-		panel.webview.onDidReceiveMessage(
+        let resultPanel: vscode.WebviewPanel | null = null;
+
+        panel.webview.onDidReceiveMessage(
             async (message) => {
                 switch (message.command) {
                     case 'runQuery':
@@ -24,14 +27,33 @@ export function activate(context: vscode.ExtensionContext) {
                                 message.query,
                                 context.globalState.get('duckDbSettingsPath', null)
                             );
-							for (let r of result) {
-								for (let k in r) {
-									if (typeof r[k] !== "string" && typeof r[k] !== "number" && typeof r[k] !== "boolean") {
-										r[k] = r[k].toString();
-									}
-								}
-							}
-							panel.webview.postMessage({ command: 'queryResult', result });
+                            // Ensure result is stringified for display
+                            for (let r of result) {
+                                for (let k in r) {
+                                    if (
+                                        typeof r[k] !== "string" &&
+                                        typeof r[k] !== "number" &&
+                                        typeof r[k] !== "boolean"
+                                    ) {
+                                        r[k] = r[k].toString();
+                                    }
+                                }
+                            }
+
+                            if (!resultPanel) {
+                                resultPanel = vscode.window.createWebviewPanel(
+                                    'queryResult',
+                                    'Query Results',
+                                    vscode.ViewColumn.Two, // Split screen
+                                    { enableScripts: true }
+                                );
+
+                                resultPanel.onDidDispose(() => {
+                                    resultPanel = null; // Reset when closed
+                                });
+                            }
+
+                            resultPanel.webview.html = getResultsHtml(result);
                         } catch (error: any) {
                             panel.webview.postMessage({ command: 'queryError', error: error.message });
                         }
@@ -43,29 +65,26 @@ export function activate(context: vscode.ExtensionContext) {
         );
     });
 
-	const setDuckDbSettings = vscode.commands.registerCommand('vs-quack.setSettings', async () => {
-		const fileUri = await vscode.window.showOpenDialog({
-			canSelectMany: false,
-			openLabel: 'Select Settings File',
-			canSelectFiles: true, 
-			
-			filters: {
-				'All Files': ['*']
-			}
-		});
-	
-		if (!fileUri || fileUri.length === 0) {
-			vscode.window.showWarningMessage('No file selected.');
-			return;
-		}
-	
-		const selectedPath = fileUri[0].fsPath;
-		context.globalState.update('duckDbSettingsPath', selectedPath);
-		vscode.window.showInformationMessage(`Settings file selected: ${selectedPath}`);
-	});
-	
+    const setDuckDbSettings = vscode.commands.registerCommand('vs-quack.setSettings', async () => {
+        const fileUri = await vscode.window.showOpenDialog({
+            canSelectMany: false,
+            openLabel: 'Select Settings File',
+            canSelectFiles: true,
+            filters: {
+                'All Files': ['*']
+            }
+        });
+
+        if (!fileUri || fileUri.length === 0) {
+            vscode.window.showWarningMessage('No file selected.');
+            return;
+        }
+
+        const selectedPath = fileUri[0].fsPath;
+        context.globalState.update('duckDbSettingsPath', selectedPath);
+        vscode.window.showInformationMessage(`Settings file selected: ${selectedPath}`);
+    });
+
     context.subscriptions.push(runQueryDisposable);
     context.subscriptions.push(setDuckDbSettings);
 }
-
-export function deactivate() {}
