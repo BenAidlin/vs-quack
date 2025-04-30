@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Results</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+            cursor: pointer;
+        }
+        input[type="text"] {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Query Results</h1>
+    <input type="text" id="searchBox" placeholder="Search..." onkeyup="filterTable()">
+    <table id="resultsTable">
+        <thead>
+            <tr>{headers}</tr>
+        </thead>
+        <tbody>
+            {rows}
+        </tbody>
+    </table>
+    <script>
+        let sortOrder = {};
+        function sortTable(column) {
+            const table = document.getElementById('resultsTable');
+            const rows = Array.from(table.getElementsByTagName('tr')).slice(1);
+            const columnIndex = Array.from(table.getElementsByTagName('th'))
+                .findIndex(th => th.textContent.includes(column));
+
+            if (sortOrder[column] === undefined) {
+                sortOrder[column] = true;
+            } else {
+                sortOrder[column] = !sortOrder[column];
+            }
+
+            rows.sort((a, b) => {
+                const cellA = a.getElementsByTagName('td')[columnIndex]?.textContent || '';
+                const cellB = b.getElementsByTagName('td')[columnIndex]?.textContent || '';
+
+                if (!isNaN(cellA) && !isNaN(cellB)) {
+                    return sortOrder[column]
+                        ? Number(cellA) - Number(cellB)
+                        : Number(cellB) - Number(cellA);
+                }
+
+                return sortOrder[column]
+                    ? cellA.localeCompare(cellB)
+                    : cellB.localeCompare(cellA);
+            });
+
+            const tbody = table.getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        function filterTable() {
+            const input = document.getElementById('searchBox').value.toLowerCase();
+            const table = document.getElementById('resultsTable');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const cells = row.getElementsByTagName('td');
+                let match = false;
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell && cell.textContent.toLowerCase().includes(input)) {
+                        match = true;
+                        break;
+                    }
+                }
+
+                row.style.display = match ? '' : 'none';
+            }
+        }
+    </script>
+</body>
+</html>

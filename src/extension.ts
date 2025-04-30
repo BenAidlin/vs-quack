@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { executeQuery, wrapQueryWithCopyTo } from './util/ddbClient';
-import { getQueryEditorHtml } from './views/queryEditorHtml';
 import { getResultsHtml } from './views/getResultsHtml';
+import { getQueryEditorHtml } from './views/getQueryEditorHtml';
 
 export function activate(context: vscode.ExtensionContext) {
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {

@@ -1,121 +1,31 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 export function getResultsHtml(result: any[]): string {
-    const styles = `
-        <style>
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                margin-top: 20px;
-            }
-            th, td {
-                border: 1px solid #ddd;
-                padding: 8px;
-                text-align: left;
-            }
-            th {
-                background-color: #f4f4f4;
-                cursor: pointer;
-            }
-            input[type="text"] {
-                margin-bottom: 10px;
-                padding: 8px;
-                width: 100%;
-                box-sizing: border-box;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-            }
-        </style>
-    `;
+    const htmlPath = path.join(__dirname, 'results.html');
+    let html = '';
 
-    const scripts = `
-        <script>
-            let sortOrder = {};
-            function sortTable(column) {
-                const table = document.getElementById('resultsTable');
-                const rows = Array.from(table.getElementsByTagName('tr')).slice(1);
-                const columnIndex = Array.from(table.getElementsByTagName('th'))
-                    .findIndex(th => th.textContent.includes(column));
+    try {
+        html = fs.readFileSync(htmlPath, 'utf-8');
+    } catch (error) {
+        console.error(`Failed to load HTML file: ${error}`);
+        return `<h1>Error loading Results HTML</h1>`;
+    }
 
-                if (sortOrder[column] === undefined) {
-                    sortOrder[column] = true;
-                } else {
-                    sortOrder[column] = !sortOrder[column];
-                }
+    const headers = Object.keys(result[0] || {})
+        .map(key => `<th onclick="sortTable('${key}')">${key} &#9650;&#9660;</th>`)
+        .join('');
 
-                rows.sort((a, b) => {
-                    const cellA = a.getElementsByTagName('td')[columnIndex]?.textContent || '';
-                    const cellB = b.getElementsByTagName('td')[columnIndex]?.textContent || '';
+    const rows = result
+        .map(row => {
+            const cells = Object.values(row)
+                .map(value => `<td>${value}</td>`)
+                .join('');
+            return `<tr>${cells}</tr>`;
+        })
+        .join('');
 
-                    if (!isNaN(cellA) && !isNaN(cellB)) {
-                        return sortOrder[column]
-                            ? Number(cellA) - Number(cellB)
-                            : Number(cellB) - Number(cellA);
-                    }
+    html = html.replace('{headers}', headers).replace('{rows}', rows);
 
-                    return sortOrder[column]
-                        ? cellA.localeCompare(cellB)
-                        : cellB.localeCompare(cellA);
-                });
-
-                const tbody = table.getElementsByTagName('tbody')[0];
-                tbody.innerHTML = '';
-                rows.forEach(row => tbody.appendChild(row));
-            }
-
-            function filterTable() {
-                const input = document.getElementById('searchBox').value.toLowerCase();
-                const table = document.getElementById('resultsTable');
-                const rows = table.getElementsByTagName('tr');
-
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    const cells = row.getElementsByTagName('td');
-                    let match = false;
-
-                    for (let j = 0; j < cells.length; j++) {
-                        const cell = cells[j];
-                        if (cell && cell.textContent.toLowerCase().includes(input)) {
-                            match = true;
-                            break;
-                        }
-                    }
-
-                    row.style.display = match ? '' : 'none';
-                }
-            }
-        </script>
-    `;
-
-    const rows = result.map(row => {
-        const cells = Object.values(row)
-            .map(value => `<td>${value}</td>`)
-            .join('');
-        return `<tr>${cells}</tr>`;
-    }).join('');
-
-    const headers = Object.keys(result[0] || {}).map(key => `<th onclick="sortTable('${key}')">${key} &#9650;&#9660;</th>`).join('');
-
-    return `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Query Results</title>
-            ${styles}
-        </head>
-        <body>
-            <h1>Query Results</h1>
-            <input type="text" id="searchBox" placeholder="Search..." onkeyup="filterTable()">
-            <table id="resultsTable">
-                <thead>
-                    <tr>${headers}</tr>
-                </thead>
-                <tbody>
-                    ${rows}
-                </tbody>
-            </table>
-            ${scripts}
-        </body>
-        </html>
-    `;
+    return html;
 }
