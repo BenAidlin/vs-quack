@@ -38,8 +38,7 @@ export function getQueryEditorHtml(): string {
         <script>
             const vscode = acquireVsCodeApi();
             let isLoading = false;
-
-            document.getElementById('runQueryButton').addEventListener('click', () => {
+            const handlePress = (type) => {
                 if (isLoading) return;
 
                 const query = document.getElementById('queryInput').value;
@@ -50,9 +49,21 @@ export function getQueryEditorHtml(): string {
 
                 isLoading = true;
                 document.getElementById('runQueryButton').disabled = true;
+                document.getElementById('runQueryButtonCsv').disabled = true;
+                document.getElementById('runQueryButtonJson').disabled = true;
                 document.getElementById('progressIndicator').style.display = 'block';
+                vscode.postMessage({ command: 'runQuery', query, type });
+            };
+            document.getElementById('runQueryButton').addEventListener('click', () => {
+                handlePress(null);
+            });
 
-                vscode.postMessage({ command: 'runQuery', query });
+            document.getElementById('runQueryButtonCsv').addEventListener('click', () => {
+                handlePress('csv');
+            });
+            
+            document.getElementById('runQueryButtonJson').addEventListener('click', () => {
+                handlePress('json');
             });
 
             window.addEventListener('message', (event) => {
@@ -62,6 +73,8 @@ export function getQueryEditorHtml(): string {
                     // Clean up loading state
                     isLoading = false;
                     document.getElementById('runQueryButton').disabled = false;
+                    document.getElementById('runQueryButtonCsv').disabled = false;
+                    document.getElementById('runQueryButtonJson').disabled = false;
                     document.getElementById('progressIndicator').style.display = 'none';
 
                     if (message.command === 'queryResult') {
@@ -79,6 +92,8 @@ export function getQueryEditorHtml(): string {
             <h1>Query Editor</h1>
             <textarea id="queryInput" placeholder="Enter your SQL query here..."></textarea>
             <button id="runQueryButton">Run Query</button>
+            <button id="runQueryButtonCsv">Get as CSV</button>
+            <button id="runQueryButtonJson">Get as JSON</button>
             <div id="progressIndicator">Running query, please wait...</div>
         </body>
     `;

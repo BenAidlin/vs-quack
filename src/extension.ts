@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { executeQuery } from './util/ddbClient';
+import { executeQuery, wrapQueryWithCopyTo } from './util/ddbClient';
 import { getQueryEditorHtml } from './views/queryEditorHtml';
 import { getResultsHtml } from './views/getResultsHtml';
 
@@ -23,6 +23,21 @@ export function activate(context: vscode.ExtensionContext) {
                 switch (message.command) {
                     case 'runQuery':
                         try {
+                            if (message.type){
+                                const destination = await vscode.window.showOpenDialog({
+                                    canSelectMany: false,
+                                    openLabel: 'Select destination folder',
+                                    canSelectFolders: true,
+                                    filters: {
+                                        'All Files': ['*']
+                                    }
+                                });
+                                if (!destination || destination.length === 0) {
+                                    vscode.window.showWarningMessage('No destination selected.');
+                                    return;
+                                }
+                                message.query = wrapQueryWithCopyTo(message.query, destination[0].fsPath, message.type);
+                            }
                             const result = await executeQuery(
 								context,
                                 message.query,

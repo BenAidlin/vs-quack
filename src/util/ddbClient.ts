@@ -56,3 +56,8 @@ export async function ensureDbFile(context: vscode.ExtensionContext): Promise<st
 
     return cacheFilePath;
 }
+
+export function wrapQueryWithCopyTo(query: string, destination: string, format: string): string {
+    query = query.replace(/;/g, '');
+    return `COPY (${query}) TO '${destination}/vs-quack.${format}';`;
+}
