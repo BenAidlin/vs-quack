@@ -54,6 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
                             }
 
                             resultPanel.webview.html = getResultsHtml(result);
+							panel.webview.postMessage({ command: 'queryResult' });
                         } catch (error: any) {
                             panel.webview.postMessage({ command: 'queryError', error: error.message });
                         }
