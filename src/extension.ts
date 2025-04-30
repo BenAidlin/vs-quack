@@ -1,36 +1,46 @@
 import * as vscode from 'vscode';
 import { executeQuery } from './util/ddbClient';
-import { getHtmlForTable } from './views/tableHtml';
+import { getQueryEditorHtml } from './views/queryEditorHtml';
 
 export function activate(context: vscode.ExtensionContext) {
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
-        const query = await vscode.window.showInputBox({
-            prompt: 'Enter your SQL query',
-            placeHolder: 'SELECT * FROM table_name',
-        });
+        const panel = vscode.window.createWebviewPanel(
+            'queryEditor',
+            'Query Editor',
+            vscode.ViewColumn.One,
+            {
+                enableScripts: true,
+                retainContextWhenHidden: true,
+            }
+        );
+		panel.webview.html = getQueryEditorHtml();
 
-        if (!query) {
-            vscode.window.showWarningMessage('Query was canceled or empty.');
-            return;
-        }
-
-        try {
-            const result = await executeQuery(query, context.globalState.get('duckDbSettingsPath', null));
-            
-			// Create and show a Webview panel to display the results
-			const panel = vscode.window.createWebviewPanel(
-				'queryResults', // Identifier for the webview
-				'Query Results', // Title of the webview
-				vscode.ViewColumn.One, // Editor column to display in
-				{ enableScripts: true } // Enable JavaScript in the webview
-			);
-
-			// Render the HTML content for the table
-			panel.webview.html = getHtmlForTable(result);
-        } catch (error: any) {
-            console.error('Error executing query:', error);
-            vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
-        }
+		panel.webview.onDidReceiveMessage(
+            async (message) => {
+                switch (message.command) {
+                    case 'runQuery':
+                        try {
+                            const result = await executeQuery(
+                                message.query,
+                                context.globalState.get('duckDbSettingsPath', null)
+                            );
+							for (let r of result) {
+								for (let k in r) {
+									if (typeof r[k] !== "string" && typeof r[k] !== "number" && typeof r[k] !== "boolean") {
+										r[k] = r[k].toString();
+									}
+								}
+							}
+							panel.webview.postMessage({ command: 'queryResult', result });
+                        } catch (error: any) {
+                            panel.webview.postMessage({ command: 'queryError', error: error.message });
+                        }
+                        break;
+                }
+            },
+            undefined,
+            context.subscriptions
+        );
     });
 
 	const setDuckDbSettings = vscode.commands.registerCommand('vs-quack.setSettings', async () => {
