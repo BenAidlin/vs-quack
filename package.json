@@ -14,8 +14,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vs-quack.helloWorld",
-        "title": "Hello World"
+        "command": "vs-quack.runQuery",
+        "title": "Run DDB Query"
       }
     ]
   },
