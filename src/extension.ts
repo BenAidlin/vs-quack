@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { executeQuery, wrapQueryWithCopyTo } from './util/ddbClient';
 import { getResultsHtml } from './views/getResultsHtml';
 import { getQueryEditorHtml } from './views/getQueryEditorHtml';
+import { handleQuery } from './handlers/queryHandler';
 
 export function activate(context: vscode.ExtensionContext) {
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
@@ -23,39 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
                 switch (message.command) {
                     case 'runQuery':
                         try {
-                            if (message.type){
-                                const destination = await vscode.window.showOpenDialog({
-                                    canSelectMany: false,
-                                    openLabel: 'Select destination folder',
-                                    canSelectFolders: true,
-                                    filters: {
-                                        'All Files': ['*']
-                                    }
-                                });
-                                if (!destination || destination.length === 0) {
-                                    vscode.window.showWarningMessage('No destination selected.');
-                                    return;
-                                }
-                                message.query = wrapQueryWithCopyTo(message.query, destination[0].fsPath, message.type);
-                            }
-                            const result = await executeQuery(
-								context,
-                                message.query,
-                                context.globalState.get('duckDbSettingsPath', null)
-                            );
-                            // Ensure result is stringified for display
-                            for (let r of result) {
-                                for (let k in r) {
-                                    if (
-                                        typeof r[k] !== "string" &&
-                                        typeof r[k] !== "number" &&
-                                        typeof r[k] !== "boolean"
-                                    ) {
-                                        r[k] = r[k].toString();
-                                    }
-                                }
-                            }
-
+                            const result = await handleQuery(context, message);
                             if (!resultPanel) {
                                 resultPanel = vscode.window.createWebviewPanel(
                                     'queryResult',
@@ -63,14 +31,13 @@ export function activate(context: vscode.ExtensionContext) {
                                     vscode.ViewColumn.Two, // Split screen
                                     { enableScripts: true }
                                 );
-
+                    
                                 resultPanel.onDidDispose(() => {
                                     resultPanel = null; // Reset when closed
                                 });
                             }
-
                             resultPanel.webview.html = getResultsHtml(result);
-							panel.webview.postMessage({ command: 'queryResult' });
+                            panel.webview.postMessage({ command: 'queryResult' });
                         } catch (error: any) {
                             panel.webview.postMessage({ command: 'queryError', error: error.message });
                             vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
