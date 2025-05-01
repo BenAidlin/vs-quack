@@ -42,11 +42,6 @@
           "command": "vs-quack.runTextSelectionQuery",
           "when": "editorHasSelection",
           "group": "navigation"
-        },
-        {
-          "command": "vs-quack.runQueryOnExplorer",
-          "when": "resourceLangId == sql || resourceLangId == plaintext",
-          "group": "navigation"
         }
       ],
       "explorer/context": [
