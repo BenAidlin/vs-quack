@@ -26,8 +26,37 @@
       {
         "command": "vs-quack.setSettings",
         "title": "vs-quack: Set DuckDb Settings"
+      },
+      {
+        "command": "vs-quack.runTextSelectionQuery",
+        "title": "vs-quack: Run Selected Text as Query"
+      },
+      {
+        "command": "vs-quack.runQueryOnExplorer",
+        "title": "vs-quack: Run Query on Explorer"
       }
-    ]
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "vs-quack.runTextSelectionQuery",
+          "when": "editorHasSelection",
+          "group": "navigation"
+        },
+        {
+          "command": "vs-quack.runQueryOnExplorer",
+          "when": "resourceLangId == sql || resourceLangId == plaintext",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "vs-quack.runQueryOnExplorer",
+          "when": "resourceExtname =~ /\\.(json|csv|parquet)$/i",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

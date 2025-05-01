@@ -25,6 +25,9 @@ export async function handleQuery(
         message.query,
         context.globalState.get('duckDbSettingsPath', null)
     );
+    if (!result) {
+        return null;
+    }
     // Ensure result is stringified for display
     for (let r of result) {
         for (let k in r) {

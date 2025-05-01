@@ -40,9 +40,19 @@ async function getConnection(context: vscode.ExtensionContext, settingsPath: str
 };
 
 export const executeQuery: any = async (context: vscode.ExtensionContext, query: string, settingsPath: string | null = null) => {
-    const connection = await getConnection(context, settingsPath);
-    const result = await connection.runAndReadAll(query);
-    return result.getRowObjects();
+    // const connection = await getConnection(context, settingsPath);
+    const connection = await DuckDBConnection.create();
+    try{
+        const result = await connection.runAndReadAll(query);
+        return result.getRowObjects();
+    }
+    catch (error) {
+        vscode.window.showErrorMessage(`Error executing query: ${error}`);
+        return null;
+    }
+    finally{
+        connection.closeSync();
+    }
 };
 
 export async function ensureDbFile(context: vscode.ExtensionContext): Promise<string> {
@@ -60,4 +70,9 @@ export async function ensureDbFile(context: vscode.ExtensionContext): Promise<st
 export function wrapQueryWithCopyTo(query: string, destination: string, format: string): string {
     query = query.replace(/;/g, '');
     return `COPY (${query}) TO '${destination}/vs-quack.${format}';`;
+}
+
+export function createQueryFromPath(uri: string){
+    const query = `SELECT * FROM '${uri}'`;
+    return query;
 }
