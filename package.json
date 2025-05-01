@@ -33,7 +33,7 @@
       },
       {
         "command": "vs-quack.runQueryOnExplorer",
-        "title": "vs-quack: Run Query on Explorer"
+        "title": "vs-quack: Run Query on File"
       }
     ],
     "menus": {
