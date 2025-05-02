@@ -8,15 +8,15 @@ First - if you are already using duckdb and have a .duckdbrc file or other confi
 
 Next - go ahead and start querying you data using duckdb queries.
 
-Querying from a prompt:
+Querying from a prompt (`vs-quack: Run DuckDb Query` in the command palette):
 
 ![alt text](images/query_example.png)
 
-Querying from the editor:
+Querying from the editor (right click in editor -> `vs-quack: Run Selected Text as Query`):
 
 ![alt text](images/query_from_editor_example.png)
 
-Querying from the explorer:
+Querying from the explorer(right click with explorer focus -> `vs-quack: Run Query on Explorer`):
 
 ![alt text](images/query_from_file_in_explorer.png)
 
