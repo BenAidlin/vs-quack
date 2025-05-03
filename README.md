@@ -20,7 +20,7 @@ Querying from the explorer(right click with explorer focus -> `vs-quack: Run Que
 
 ![alt text](images/run_query_on_file.png)
 
-You can also view the query history (up to 50 queries), filter them, and open the in editor, using: `vs-quack: Show Query History`.
+You can also view the query history (up to 50 queries), filter them, and open them in editor, using: `vs-quack: Show Query History`.
 
 ## Requirements
 
