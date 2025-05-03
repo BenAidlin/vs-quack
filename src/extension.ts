@@ -4,6 +4,7 @@ import { handleQuery } from './handlers/queryHandler';
 import { createQueryFromPath } from './util/ddbClient';
 import { handleResult } from './handlers/resultHandler';
 import { openQueryWindow } from './handlers/queryWindowHandler';
+import { getQueryHistory } from './handlers/historyHandler';
 
 export function activate(context: vscode.ExtensionContext) {
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
@@ -72,9 +73,31 @@ export function activate(context: vscode.ExtensionContext) {
         }
     });
 
+    const showHistoryCommand = vscode.commands.registerCommand('vs-quack.showQueryHistory', async () => {
+        const history = getQueryHistory(context);
+        if (history.length === 0) {
+            vscode.window.showInformationMessage('Query history is empty.');
+            return;
+        }
+    
+        const selectedQuery = await vscode.window.showQuickPick(
+            history.map((query, index) => ({ label: `Query ${index + 1}`, description: query })),
+            {
+                placeHolder: 'Filter and select a query',
+                matchOnDescription: true,
+            }
+        );
+    
+        if (selectedQuery && selectedQuery.description) {
+            openQueryWindow(context, selectedQuery.description);
+        }
+    });
+    
+
     context.subscriptions.push(runQueryDisposable);
     context.subscriptions.push(setDuckDbSettings);
     context.subscriptions.push(runSelectedTextQueryCommand);
     context.subscriptions.push(runQueryOnFileCommand);
+    context.subscriptions.push(showHistoryCommand);
     
 }

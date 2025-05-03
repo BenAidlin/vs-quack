@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { executeQuery, wrapQueryWithCopyTo } from '../util/ddbClient';
+import { saveQueryToHistory } from './historyHandler';
 
 export async function handleQuery(
     context: vscode.ExtensionContext,
@@ -44,6 +45,7 @@ export async function handleQuery(
             }
         }
     }
+    await saveQueryToHistory(context, message.query);
     return result;
 
 }
