@@ -3,40 +3,11 @@ import { getQueryEditorHtml } from './views/getQueryEditorHtml';
 import { handleQuery } from './handlers/queryHandler';
 import { createQueryFromPath } from './util/ddbClient';
 import { handleResult } from './handlers/resultHandler';
+import { openQueryWindow } from './handlers/queryWindowHandler';
 
 export function activate(context: vscode.ExtensionContext) {
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
-        const panel = vscode.window.createWebviewPanel(
-            'queryEditor',
-            'Query Editor',
-            vscode.ViewColumn.One,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true,
-            }
-        );
-        panel.webview.html = getQueryEditorHtml();
-
-        let resultPanel: vscode.WebviewPanel | null = null;
-
-        panel.webview.onDidReceiveMessage(
-            async (message) => {
-                switch (message.command) {
-                    case 'runQuery':
-                        try {
-                            const result = await handleQuery(context, message);
-                            await handleResult(result);
-                            panel.webview.postMessage({ command: 'queryResult' });
-                        } catch (error: any) {
-                            panel.webview.postMessage({ command: 'queryError', error: error.message });
-                            vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
-                        }
-                        break;
-                }
-            },
-            undefined,
-            context.subscriptions
-        );
+        openQueryWindow(context);
     });
 
     const setDuckDbSettings = vscode.commands.registerCommand('vs-quack.setSettings', async () => {
@@ -67,22 +38,21 @@ export function activate(context: vscode.ExtensionContext) {
         const selection = editor.selection;
         const selectedText = editor.document.getText(selection);
         
-        if (selectedText.trim()) {
-            // Perform your query logic here
-            vscode.window.showInformationMessage(`Running query: ${selectedText}`);
-            try{
-                const result = await handleQuery(context, {query: selectedText});
-                await handleResult(result);
-            }
-            catch (error: any) {
-                vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
-                return;
-            }
-            
-        } else {
+        if (!selectedText.trim()) {
             vscode.window.showErrorMessage('No text selected.');
+            return;
         }
-    
+        // Perform your query logic here
+        vscode.window.showInformationMessage(`Running query: ${selectedText}`);
+        try{
+            openQueryWindow(context, selectedText);
+            const result = await handleQuery(context, {query: selectedText});
+            await handleResult(result);
+        }
+        catch (error: any) {
+            vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
+            return;
+        }
     });
 
     const runQueryOnFileCommand = vscode.commands.registerCommand('vs-quack.runQueryOnExplorer', async (uri: vscode.Uri) => {
@@ -92,6 +62,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
         try{
             const query = createQueryFromPath(uri.fsPath);
+            openQueryWindow(context, query);
             const result = await handleQuery(context, {query: query});
             await handleResult(result);
 
