@@ -34,6 +34,10 @@
       {
         "command": "vs-quack.runQueryOnExplorer",
         "title": "vs-quack: Run Query on File"
+      },
+      {
+        "command": "vs-quack.showQueryHistory",
+        "title": "vs-quack: Show Query History"
       }
     ],
     "menus": {
