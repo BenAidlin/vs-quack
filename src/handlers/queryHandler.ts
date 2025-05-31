@@ -1,10 +1,12 @@
 import * as vscode from 'vscode';
 import { executeQuery, wrapQueryWithCopyTo } from '../util/ddbClient';
 import { saveQueryToHistory } from './historyHandler';
+import { DuckDBConnection } from '@duckdb/node-api';
 
 export async function handleQuery(
     context: vscode.ExtensionContext,
     message: any,
+    connection: DuckDBConnection
 ): Promise<any> {
     if (message.type){
         const destination = await vscode.window.showOpenDialog({
@@ -22,9 +24,8 @@ export async function handleQuery(
         message.query = wrapQueryWithCopyTo(message.query, destination[0].fsPath, message.type);
     }
     const result = await executeQuery(
-        context,
+        connection,
         message.query,
-        context.globalState.get('duckDbSettingsPath', null)
     );
     if (!result) {
         return null;
