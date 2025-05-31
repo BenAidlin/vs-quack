@@ -1,14 +1,14 @@
 import * as vscode from 'vscode';
-import { getQueryEditorHtml } from './views/getQueryEditorHtml';
 import { handleQuery } from './handlers/queryHandler';
-import { createQueryFromPath } from './util/ddbClient';
+import { createQueryFromPath, getConnection } from './util/ddbClient';
 import { handleResult } from './handlers/resultHandler';
 import { openQueryWindow } from './handlers/queryWindowHandler';
 import { getQueryHistory } from './handlers/historyHandler';
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
+    const connection = await getConnection(context.globalState.get('duckDbSettingsPath', null));
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
-        openQueryWindow(context);
+        openQueryWindow(context, connection);
     });
 
     const setDuckDbSettings = vscode.commands.registerCommand('vs-quack.setSettings', async () => {
@@ -46,8 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
         // Perform your query logic here
         vscode.window.showInformationMessage(`Running query: ${selectedText}`);
         try{
-            openQueryWindow(context, selectedText);
-            const result = await handleQuery(context, {query: selectedText});
+            openQueryWindow(context, connection, selectedText);
+            const result = await handleQuery(context, {query: selectedText}, connection);
             await handleResult(result);
         }
         catch (error: any) {
@@ -63,8 +63,8 @@ export function activate(context: vscode.ExtensionContext) {
         }
         try{
             const query = createQueryFromPath(uri.fsPath);
-            openQueryWindow(context, query);
-            const result = await handleQuery(context, {query: query});
+            openQueryWindow(context, connection, query);
+            const result = await handleQuery(context, {query: query}, connection);
             await handleResult(result);
 
         } catch (error: any) {
@@ -89,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
         );
     
         if (selectedQuery && selectedQuery.description) {
-            openQueryWindow(context, selectedQuery.description);
+            openQueryWindow(context, connection, selectedQuery.description);
         }
     });
     

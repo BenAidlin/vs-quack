@@ -1,11 +1,23 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { DuckDBConnection } from '@duckdb/node-api';
-import { DuckDBInstance,  } from '@duckdb/node-api';
 
 
 const fs = require('fs');
 const readline = require('readline');
+
+export async function getConnection(settingsPath: string | null | undefined = null): Promise<DuckDBConnection> {
+    const connection = await DuckDBConnection.create();
+    if (settingsPath){
+        try {
+            await executeFileLineByLine(settingsPath, connection).catch(console.error);
+        }
+        catch (error) {
+            vscode.window.showWarningMessage('Could not load or execute settings file properly.');
+        }
+    }
+    return connection;
+};
 
 async function executeFileLineByLine(filePath: string, connection: DuckDBConnection) {
     const fileStream = fs.createReadStream(filePath);
@@ -20,28 +32,8 @@ async function executeFileLineByLine(filePath: string, connection: DuckDBConnect
     }
 }
 
-
-async function getConnection(context: vscode.ExtensionContext, settingsPath: string | null | undefined = null): Promise<DuckDBConnection> {
-    const dbPath = await ensureDbFile(context);
-    // const instance = await DuckDBInstance.create(dbPath);
-    const instance = await DuckDBInstance.fromCache(dbPath, {
-        
-    });
-    const connection = await instance.connect();
-    if (settingsPath){
-        try {
-            await executeFileLineByLine(settingsPath, connection).catch(console.error);
-        }
-        catch (error) {
-            vscode.window.showWarningMessage('Could not load or execute settings file properly.');
-        }
-    }
-    return connection;
-};
-
-export const executeQuery: any = async (context: vscode.ExtensionContext, query: string, settingsPath: string | null = null) => {
+export const executeQuery: any = async (connection: DuckDBConnection, query: string) => {
     // const connection = await getConnection(context, settingsPath);
-    const connection = await DuckDBConnection.create();
     try{
         const result = await connection.runAndReadAll(query);
         return result.getRowObjects();
@@ -49,9 +41,6 @@ export const executeQuery: any = async (context: vscode.ExtensionContext, query:
     catch (error) {
         vscode.window.showErrorMessage(`Error executing query: ${error}`);
         return null;
-    }
-    finally{
-        connection.closeSync();
     }
 };
 

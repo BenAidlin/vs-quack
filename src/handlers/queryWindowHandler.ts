@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import { getQueryEditorHtml } from '../views/getQueryEditorHtml';
 import { handleQuery } from './queryHandler';
 import { handleResult } from './resultHandler';
+import { DuckDBConnection } from '@duckdb/node-api';
 
-export function openQueryWindow(context: vscode.ExtensionContext, queryText: string | null = null){
+export function openQueryWindow(context: vscode.ExtensionContext, connection: DuckDBConnection, queryText: string | null = null){
     const panel = vscode.window.createWebviewPanel(
         'queryEditor',
         'Query Editor',
@@ -20,7 +21,7 @@ export function openQueryWindow(context: vscode.ExtensionContext, queryText: str
             switch (message.command) {
                 case 'runQuery':
                     try {
-                        const result = await handleQuery(context, message);
+                        const result = await handleQuery(context, message, connection);
                         await handleResult(result);
                         panel.webview.postMessage({ command: 'queryResult' });
                     } catch (error: any) {
