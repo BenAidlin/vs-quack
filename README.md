@@ -57,7 +57,7 @@ Initial release of vs-quack. Simple querying capabilities.
 * BUGFIX: Fixed settings not preserving issue.
 * Persisted in memory connection while extension is activated.
 
-### 1.3.0-1
+### 1.1.130
 
 * update to duckdb 1.3.0.
 * change versioning strategy to show which duckdb version is utilized.
