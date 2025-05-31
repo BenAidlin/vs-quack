@@ -48,3 +48,8 @@ Initial release of vs-quack. Simple querying capabilities.
 
 * Added query history capabilities.
 * Open query editor in editor/explorer queries.
+
+### 1.0.1
+
+* BUGFIX: Fixed settings not preserving issue.
+* Persisted in memory connection while extension is activated.
