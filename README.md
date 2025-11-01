@@ -10,15 +10,15 @@ Next - go ahead and start querying you data using duckdb queries.
 
 Querying from a prompt (`vs-quack: Run DuckDb Query` in the command palette):
 
-![alt text](image.png)
+![alt text](images/run_ddb_query.png)
 
 Querying from the editor (right click in editor -> `vs-quack: Run Selected Text as Query`):
 
-![alt text](image-1.png)
+![alt text](images/run_from_editor.png)
 
 Querying from the explorer(right click with explorer focus -> `vs-quack: Run Query on Explorer`):
 
-![alt text](image-2.png)
+![alt text](images/run_query_on_file.png)
 
 You can also view the query history (up to 50 queries), filter them, and open them in editor, using: `vs-quack: Show Query History`.
 
