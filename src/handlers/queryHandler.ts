@@ -5,6 +5,7 @@ import { DuckDBConnection } from '@duckdb/node-api';
 
 const PREVIEW_ROWS_START = 200;
 const PREVIEW_ROWS_END = 200;
+const DOT_ROWS = 5; // number of rows of dots to show in the middle
 
 export async function handleQuery(
     context: vscode.ExtensionContext,
@@ -55,12 +56,15 @@ export async function handleQuery(
         preview.push(normalizeRow(fullResult[i]));
     }
 
-    // Add "..." row if truncated
+    // Add multiple "..." rows if truncated
     if (totalRows > PREVIEW_ROWS_START + PREVIEW_ROWS_END) {
-        const ellipsisRow: any = {};
         const firstRowKeys = Object.keys(fullResult[0] || {});
-        firstRowKeys.forEach(key => ellipsisRow[key] = '...');
-        preview.push(ellipsisRow);
+
+        for (let d = 0; d < DOT_ROWS; d++) {
+            const ellipsisRow: any = {};
+            firstRowKeys.forEach(key => ellipsisRow[key] = '...');
+            preview.push(ellipsisRow);
+        }
 
         // Last N rows
         for (let i = totalRows - PREVIEW_ROWS_END; i < totalRows; i++) {
