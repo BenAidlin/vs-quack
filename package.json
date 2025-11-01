@@ -2,7 +2,7 @@
   "name": "vs-quack",
   "displayName": "vs-quack",
   "description": "DuckDB based data processing tools for vscode.",
-  "version": "1.1.130",
+  "version": "2.0.141",
   "icon": "images/logo.png",
   "publisher": "BenAidlin",
   "repository": {
@@ -78,6 +78,6 @@
     "typescript": "^5.8.2"
   },
   "dependencies": {
-    "@duckdb/node-api": "^1.3.0-alpha.21"
+    "@duckdb/node-api": "^1.4.1-r.4"
   }
 }

@@ -18,10 +18,13 @@ export function getResultsHtml(result: any[]): string {
 
     const rows = result
         .map(row => {
+            // Check if this is an ellipsis row
+            const isEllipsisRow = Object.values(row).every(val => val === '...');
+            const rowClass = isEllipsisRow ? ' class="ellipsis-row"' : '';
             const cells = Object.values(row)
                 .map(value => `<td>${value}</td>`)
                 .join('');
-            return `<tr>${cells}</tr>`;
+            return `<tr${rowClass}>${cells}</tr>`;
         })
         .join('');
 

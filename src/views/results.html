@@ -1,100 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Query Results</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f4f4f4;
-            cursor: pointer;
-        }
-        input[type="text"] {
-            margin-bottom: 10px;
-            padding: 8px;
-            width: 100%;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Query Results</title>
+<style>
+    body {
+        font-family: 'Fira Code', monospace;
+        margin: 20px;
+        background-color: var(--vscode-editor-background, #1e1e1e);
+        color: var(--vscode-editor-foreground, #d4d4d4);
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-top: 20px;
+        background-color: var(--vscode-editor-background, #1e1e1e);
+        color: var(--vscode-editor-foreground, #d4d4d4);
+        font-family: 'Fira Code', monospace;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    th, td {
+        border: 1px solid #444;
+        padding: 8px;
+        text-align: left;
+    }
+    th {
+        background-color: #333;
+        color: var(--vscode-editor-foreground, #d4d4d4);
+        cursor: pointer;
+    }
+    input[type="text"] {
+        margin-bottom: 10px;
+        padding: 8px;
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #555;
+        border-radius: 4px;
+        background-color: #222;
+        color: #eee;
+        font-family: 'Fira Code', monospace;
+    }
+    .ellipsis-row {
+        font-style: italic;
+        color: #888;
+        pointer-events: none;
+        background-color: #111;
+    }
+    .no-sort th {
+        cursor: default;
+        color: #aaa;
+    }
+</style>
 </head>
 <body>
-    <h1>Query Results</h1>
-    <input type="text" id="searchBox" placeholder="Search..." onkeyup="filterTable()">
-    <table id="resultsTable">
-        <thead>
-            <tr>{headers}</tr>
-        </thead>
-        <tbody>
-            {rows}
-        </tbody>
-    </table>
-    <script>
-        let sortOrder = {};
-        function sortTable(column) {
-            const table = document.getElementById('resultsTable');
-            const rows = Array.from(table.getElementsByTagName('tr')).slice(1);
-            const columnIndex = Array.from(table.getElementsByTagName('th'))
-                .findIndex(th => th.textContent.includes(column));
+<h1>Query Results</h1>
+<input type="text" id="searchBox" placeholder="Search..." onkeyup="filterTable()">
+<table id="resultsTable">
+    <thead>
+        <tr>{headers}</tr>
+    </thead>
+    <tbody>
+        {rows}
+    </tbody>
+</table>
+<script>
+    let sortOrder = {};
+    const table = document.getElementById('resultsTable');
+    const hasDots = Array.from(table.getElementsByTagName('tr'))
+                        .some(row => row.classList.contains('ellipsis-row'));
 
-            if (sortOrder[column] === undefined) {
-                sortOrder[column] = true;
-            } else {
-                sortOrder[column] = !sortOrder[column];
-            }
+    if (hasDots) {
+        table.classList.add('no-sort');
+    }
 
-            rows.sort((a, b) => {
-                const cellA = a.getElementsByTagName('td')[columnIndex]?.textContent || '';
-                const cellB = b.getElementsByTagName('td')[columnIndex]?.textContent || '';
+    function sortTable(column) {
+        if (hasDots) {
+            alert('Sorting is disabled for truncated results.');
+            return;
+        }
 
-                if (!isNaN(cellA) && !isNaN(cellB)) {
-                    return sortOrder[column]
-                        ? Number(cellA) - Number(cellB)
-                        : Number(cellB) - Number(cellA);
-                }
+        const tbody = table.getElementsByTagName('tbody')[0];
+        const rows = Array.from(tbody.getElementsByTagName('tr'));
 
+        const columnIndex = Array.from(table.getElementsByTagName('th'))
+            .findIndex(th => th.textContent.includes(column));
+
+        if (sortOrder[column] === undefined) {
+            sortOrder[column] = true;
+        } else {
+            sortOrder[column] = !sortOrder[column];
+        }
+
+        rows.sort((a, b) => {
+            const cellA = a.getElementsByTagName('td')[columnIndex]?.textContent || '';
+            const cellB = b.getElementsByTagName('td')[columnIndex]?.textContent || '';
+
+            if (!isNaN(cellA) && !isNaN(cellB)) {
                 return sortOrder[column]
-                    ? cellA.localeCompare(cellB)
-                    : cellB.localeCompare(cellA);
-            });
-
-            const tbody = table.getElementsByTagName('tbody')[0];
-            tbody.innerHTML = '';
-            rows.forEach(row => tbody.appendChild(row));
-        }
-
-        function filterTable() {
-            const input = document.getElementById('searchBox').value.toLowerCase();
-            const table = document.getElementById('resultsTable');
-            const rows = table.getElementsByTagName('tr');
-
-            for (let i = 1; i < rows.length; i++) {
-                const row = rows[i];
-                const cells = row.getElementsByTagName('td');
-                let match = false;
-
-                for (let j = 0; j < cells.length; j++) {
-                    const cell = cells[j];
-                    if (cell && cell.textContent.toLowerCase().includes(input)) {
-                        match = true;
-                        break;
-                    }
-                }
-
-                row.style.display = match ? '' : 'none';
+                    ? Number(cellA) - Number(cellB)
+                    : Number(cellB) - Number(cellA);
             }
+
+            return sortOrder[column]
+                ? cellA.localeCompare(cellB)
+                : cellB.localeCompare(cellA);
+        });
+
+        const tbodyEl = table.getElementsByTagName('tbody')[0];
+        tbodyEl.innerHTML = '';
+        rows.forEach(row => tbodyEl.appendChild(row));
+    }
+
+    function filterTable() {
+        const input = document.getElementById('searchBox').value.toLowerCase();
+        const rows = table.getElementsByTagName('tr');
+
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            if (row.classList.contains('ellipsis-row')) {
+                row.style.display = '';
+                continue;
+            }
+
+            const cells = row.getElementsByTagName('td');
+            let match = false;
+            for (let j = 0; j < cells.length; j++) {
+                const cell = cells[j];
+                if (cell && cell.textContent.toLowerCase().includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+            row.style.display = match ? '' : 'none';
         }
-    </script>
+    }
+</script>
 </body>
 </html>

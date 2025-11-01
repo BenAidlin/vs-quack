@@ -46,7 +46,7 @@ export async function activate(context: vscode.ExtensionContext) {
         // Perform your query logic here
         vscode.window.showInformationMessage(`Running query: ${selectedText}`);
         try{
-            openQueryWindow(context, connection, selectedText);
+            //openQueryWindow(context, connection, selectedText);
             const result = await handleQuery(context, {query: selectedText}, connection);
             await handleResult(result);
         }
