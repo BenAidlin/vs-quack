@@ -10,15 +10,15 @@ Next - go ahead and start querying you data using duckdb queries.
 
 Querying from a prompt (`vs-quack: Run DuckDb Query` in the command palette):
 
-![alt text](images/run_ddb_query.png)
+![alt text](image.png)
 
 Querying from the editor (right click in editor -> `vs-quack: Run Selected Text as Query`):
 
-![alt text](images/run_from_editor.png)
+![alt text](image-1.png)
 
 Querying from the explorer(right click with explorer focus -> `vs-quack: Run Query on Explorer`):
 
-![alt text](images/run_query_on_file.png)
+![alt text](image-2.png)
 
 You can also view the query history (up to 50 queries), filter them, and open them in editor, using: `vs-quack: Show Query History`.
 
@@ -30,7 +30,7 @@ vscode in version 1.97 or higher.
 
 ## Known Issues
 
-* There is no limitation on returning results size/ nor db size - which passes the responsibility to the querying user.
+* There is no limitation on returning results size/ nor db size - which passes the responsibility to the querying user. (SOLVED v.2*)
 * There are also no memory limits or CPU limits build in the extension.
    <br><br>
    However - these can be easily handled using the duckdb settings file option
@@ -61,3 +61,11 @@ Initial release of vs-quack. Simple querying capabilities.
 
 * update to duckdb 1.3.0.
 * change versioning strategy to show which duckdb version is utilized.
+
+### 2.0.141
+
+* update to duckdb 1.4.1
+* change view to be consistent with vscode style
+* results query panels don't pile up, keeps only 1 results panel.
+* limit to top 200 bottom 200 results.
+* don't open query window when querying text from editor.
