@@ -65,7 +65,7 @@ Initial release of vs-quack. Simple querying capabilities.
 ### 2.0.141
 
 * update to duckdb 1.4.1
-* change view to be consistent with vscode style
+* change view to be consistent with vscode style.
 * results query panels don't pile up, keeps only 1 results panel.
 * limit to top 200 bottom 200 results.
 * don't open query window when querying text from editor.
