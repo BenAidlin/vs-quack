@@ -4,7 +4,7 @@ import { createQueryFromPath, getConnection } from './util/ddbClient';
 import { handleResult } from './handlers/resultHandler';
 import { openQueryWindow } from './handlers/queryWindowHandler';
 import { getQueryHistory } from './handlers/historyHandler';
-import { getDebugVariableValue } from './util/debugging_util';
+import { getDebugVariableValue } from './util/debuggingUtil';
 
 export async function activate(context: vscode.ExtensionContext) {
     const connection = await getConnection(context.globalState.get('duckDbSettingsPath', null));
