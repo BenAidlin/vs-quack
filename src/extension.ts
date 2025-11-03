@@ -4,6 +4,7 @@ import { createQueryFromPath, getConnection } from './util/ddbClient';
 import { handleResult } from './handlers/resultHandler';
 import { openQueryWindow } from './handlers/queryWindowHandler';
 import { getQueryHistory } from './handlers/historyHandler';
+import { getDebugVariableValue } from './util/debugging_util';
 
 export async function activate(context: vscode.ExtensionContext) {
     const connection = await getConnection(context.globalState.get('duckDbSettingsPath', null));
@@ -92,12 +93,41 @@ export async function activate(context: vscode.ExtensionContext) {
             openQueryWindow(context, connection, selectedQuery.description);
         }
     });
-    
+
+    const runCurrentVariableQuery = vscode.commands.registerCommand('vs-quack.runCurrentVariableQuery', async () => {
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) return;
+
+        const selection = editor.selection;
+        const wordRange = editor.document.getWordRangeAtPosition(selection.active);
+        const variableName = editor.document.getText(wordRange);
+
+        if (!variableName) {
+            vscode.window.showWarningMessage('No variable selected.');
+            return;
+        }
+
+        try {
+            const val = await getDebugVariableValue(variableName);
+            // Many adapters return strings quoted, so strip quotes if present
+            const cleaned = String(val).replace(/^['"]|['"]$/g, '');
+            // Now run your query using existing helpers:
+            const result = await handleQuery(context, { query: cleaned }, connection);
+            await handleResult(result);
+        } catch (err: any) {
+            vscode.window.showErrorMessage(err.message || String(err));
+        }
+    });
+
+
+
+
 
     context.subscriptions.push(runQueryDisposable);
     context.subscriptions.push(setDuckDbSettings);
     context.subscriptions.push(runSelectedTextQueryCommand);
     context.subscriptions.push(runQueryOnFileCommand);
     context.subscriptions.push(showHistoryCommand);
+    context.subscriptions.push(runCurrentVariableQuery);
     
 }

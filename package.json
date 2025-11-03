@@ -38,13 +38,24 @@
       {
         "command": "vs-quack.showQueryHistory",
         "title": "vs-quack: Show Query History"
+      },
+      
+      {
+        "command": "vs-quack.runCurrentVariableQuery",
+        "title": "vs-quack: Debug Selected Variable as Query",
       }
+
     ],
     "menus": {
       "editor/context": [
         {
           "command": "vs-quack.runTextSelectionQuery",
           "when": "editorHasSelection",
+          "group": "navigation"
+        },
+        {
+          "command": "vs-quack.runCurrentVariableQuery",
+          "when": "debuggersAvailable",
           "group": "navigation"
         }
       ],
