@@ -42,7 +42,7 @@
       
       {
         "command": "vs-quack.runCurrentVariableQuery",
-        "title": "vs-quack: Debug Selected Variable as Query",
+        "title": "vs-quack: Debug Selected Variable as Query"
       }
 
     ],
@@ -55,7 +55,7 @@
         },
         {
           "command": "vs-quack.runCurrentVariableQuery",
-          "when": "debuggersAvailable",
+          "when": "debugType && debugState == 'stopped'",
           "group": "navigation"
         }
       ],
