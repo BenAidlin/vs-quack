@@ -33,9 +33,9 @@ async function executeFileLineByLine(filePath: string, connection: DuckDBConnect
 }
 
 export const executeQuery: any = async (connection: DuckDBConnection, query: string) => {
-    // const connection = await getConnection(context, settingsPath);
     try{
-        const result = await connection.runAndReadAll(query);
+
+        const result = await connection.streamAndReadUntil(query, 400);
         return result.getRowObjects();
     }
     catch (error) {
