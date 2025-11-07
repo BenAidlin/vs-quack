@@ -5,6 +5,7 @@ import { handleResult } from './handlers/resultHandler';
 import { openQueryWindow } from './handlers/queryWindowHandler';
 import { getQueryHistory } from './handlers/historyHandler';
 import { getDebugVariableValue } from './util/debuggingUtil';
+import { QueryCodeLensProvider } from './features/queryCodeLensProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
     const connection = await getConnection(context.globalState.get('duckDbSettingsPath', null));
@@ -94,13 +95,14 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    const runCurrentVariableQuery = vscode.commands.registerCommand('vs-quack.runCurrentVariableQuery', async () => {
+    const runCurrentVariableQuery = vscode.commands.registerCommand('vs-quack.runCurrentVariableQuery', async (varName?: string) => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) return;
 
+
         const selection = editor.selection;
         const wordRange = editor.document.getWordRangeAtPosition(selection.active);
-        const variableName = editor.document.getText(wordRange);
+        const variableName = varName || editor.document.getText(wordRange);
 
         if (!variableName) {
             vscode.window.showWarningMessage('No variable selected.');
@@ -129,5 +131,11 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(runQueryOnFileCommand);
     context.subscriptions.push(showHistoryCommand);
     context.subscriptions.push(runCurrentVariableQuery);
+    context.subscriptions.push(
+        vscode.languages.registerCodeLensProvider(
+            { language: 'python' },
+            new QueryCodeLensProvider()
+        )
+    );
     
 }
