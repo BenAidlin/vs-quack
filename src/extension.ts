@@ -5,7 +5,7 @@ import { handleResult } from './handlers/resultHandler';
 import { openQueryWindow } from './handlers/queryWindowHandler';
 import { getQueryHistory } from './handlers/historyHandler';
 import { getDebugVariableValue } from './util/debuggingUtil';
-import { QueryCodeLensProvider } from './features/queryCodeLensProvider';
+// import { QueryCodeLensProvider } from './features/queryCodeLensProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
     const connection = await getConnection(context.globalState.get('duckDbSettingsPath', null));
@@ -141,7 +141,30 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
 
+    const runQueryOnFileDialog = vscode.commands.registerCommand('vs-quack.runQueryOnFileDialog', async () => {
+        // Let user pick a file
+        const fileUri = await vscode.window.showOpenDialog({
+            canSelectMany: false,
+            openLabel: 'Select a file to query',
+            canSelectFiles: true,
+            filters: { 'All Files': ['*'] }
+        });
 
+        if (!fileUri || fileUri.length === 0) {
+            vscode.window.showWarningMessage('No file selected.');
+            return;
+        }
+
+        const filePath = fileUri[0].fsPath;
+        const query = createQueryFromPath(filePath); // generate SELECT * FROM 'file'
+
+        try {
+            const result = await handleQuery(context, { query: query }, connection);
+            await handleResult(result);
+        } catch (err: any) {
+            vscode.window.showErrorMessage(`Error executing query: ${err.message || err}`);
+        }
+    });
 
 
     // context.subscriptions.push(
@@ -157,5 +180,5 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(showHistoryCommand);
     context.subscriptions.push(runCurrentVariableQuery);
     context.subscriptions.push(runCurrentVariableQueryOnVariable);
-    
+    context.subscriptions.push(runQueryOnFileDialog);
 }

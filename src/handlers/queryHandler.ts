@@ -33,7 +33,7 @@ export async function handleQuery(
     const fullResult = await executeQuery(connection, message.query);
     if (!fullResult) { return null; }
 
-    const totalRows = fullResult.length;
+    const totalRows = Math.min(fullResult.length, 500);
     const preview: any[] = [];
 
     // Helper to normalize row values

@@ -46,6 +46,10 @@
       {
         "command": "vs-quack.runCurrentVariableQuery",
         "title": "vs-quack: Evaluate Variable"
+      },
+      {
+        "command": "vs-quack.runQueryOnFileDialog",
+        "title": "vs-quack: Choose file"
       }
 
     ],
