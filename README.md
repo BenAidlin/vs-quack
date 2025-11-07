@@ -20,6 +20,12 @@ Querying from the explorer(right click with explorer focus -> `vs-quack: Run Que
 
 ![alt text](images/run_query_on_file.png)
 
+Evaluating from a variable name is now also possible through either code lense or right click -> `vs-quack: Evaluate Variable`:
+
+![alt text](images/query_from_variable.png)
+
+Choosing a file and running an empty query on it can be done using: `vs-quack: Choose file` - this can be used as parquet, csv or json preview tool.
+
 You can also view the query history (up to 50 queries), filter them, and open them in editor, using: `vs-quack: Show Query History`.
 
 ## Requirements
@@ -69,3 +75,9 @@ Initial release of vs-quack. Simple querying capabilities.
 * results query panels don't pile up, keeps only 1 results panel.
 * limit to top 200 bottom 200 results.
 * don't open query window when querying text from editor.
+
+### 2.1.141
+
+* added option to evaluate query variables while debugging.
+* added "Choose file" option.
+* moved row limitation to reader - 500 limit from the top.
