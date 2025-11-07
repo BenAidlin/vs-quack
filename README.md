@@ -20,6 +20,10 @@ Querying from the explorer(right click with explorer focus -> `vs-quack: Run Que
 
 ![alt text](images/run_query_on_file.png)
 
+Evaluating from a variable name is now also possible through either code lense or right click -> `vs-quack: Evaluate Variable`:
+
+![alt text](images/query_from_variable.png)
+
 You can also view the query history (up to 50 queries), filter them, and open them in editor, using: `vs-quack: Show Query History`.
 
 ## Requirements

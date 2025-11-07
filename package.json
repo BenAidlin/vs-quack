@@ -45,7 +45,7 @@
       
       {
         "command": "vs-quack.runCurrentVariableQuery",
-        "title": "vs-quack: Debug Selected Variable as Query"
+        "title": "vs-quack: Evaluate Variable"
       }
 
     ],

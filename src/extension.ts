@@ -95,14 +95,25 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    const runCurrentVariableQuery = vscode.commands.registerCommand('vs-quack.runCurrentVariableQuery', async (varName?: string) => {
+    const runOnVariableHelper = async (variableValue: string) => {
+        // Many adapters return strings quoted, so strip quotes if present
+        const cleaned = String(variableValue)
+            .replace(/^['"]|['"]$/g, '')   // remove wrapping quotes
+            .replace(/\\r/g, ' ')          // replace literal \r
+            .replace(/\\n/g, ' ')          // replace literal \n
+            .trim();                        // remove leading/trailing whitespace
+        const result = await handleQuery(context, { query: cleaned }, connection);
+        await handleResult(result);
+    };
+
+    const runCurrentVariableQuery = vscode.commands.registerCommand('vs-quack.runCurrentVariableQuery', async () => {
         const editor = vscode.window.activeTextEditor;
         if (!editor) return;
 
 
         const selection = editor.selection;
         const wordRange = editor.document.getWordRangeAtPosition(selection.active);
-        const variableName = varName || editor.document.getText(wordRange);
+        const variableName = editor.document.getText(wordRange);
 
         if (!variableName) {
             vscode.window.showWarningMessage('No variable selected.');
@@ -111,11 +122,19 @@ export async function activate(context: vscode.ExtensionContext) {
 
         try {
             const val = await getDebugVariableValue(variableName);
-            // Many adapters return strings quoted, so strip quotes if present
-            const cleaned = String(val).replace(/^['"]|['"]$/g, '');
-            // Now run your query using existing helpers:
-            const result = await handleQuery(context, { query: cleaned }, connection);
-            await handleResult(result);
+            return await runOnVariableHelper(val);
+        } catch (err: any) {
+            vscode.window.showErrorMessage(err.message || String(err));
+        }
+    });
+
+    const runCurrentVariableQueryOnVariable = vscode.commands.registerCommand('vs-quack.runCurrentVariableQueryOnVariable', async (variableValue?: string) => {
+        try {
+            if (!variableValue) {
+                vscode.window.showWarningMessage('No variable provided.');
+                return;
+            }
+            return await runOnVariableHelper(variableValue);
         } catch (err: any) {
             vscode.window.showErrorMessage(err.message || String(err));
         }
@@ -125,17 +144,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
+    // context.subscriptions.push(
+    //     vscode.languages.registerCodeLensProvider(
+    //         { language: 'python' },
+    //         new QueryCodeLensProvider()
+    //     )
+    // );
     context.subscriptions.push(runQueryDisposable);
     context.subscriptions.push(setDuckDbSettings);
     context.subscriptions.push(runSelectedTextQueryCommand);
     context.subscriptions.push(runQueryOnFileCommand);
     context.subscriptions.push(showHistoryCommand);
     context.subscriptions.push(runCurrentVariableQuery);
-    context.subscriptions.push(
-        vscode.languages.registerCodeLensProvider(
-            { language: 'python' },
-            new QueryCodeLensProvider()
-        )
-    );
+    context.subscriptions.push(runCurrentVariableQueryOnVariable);
     
 }
