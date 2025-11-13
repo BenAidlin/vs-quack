@@ -48,9 +48,9 @@ export function getResultsHtml(result: any[], moreRows: boolean, durationSeconds
             .replace(/>/g, "&gt;");
         meta += `
             <br>
-            <div class="tooltip-query">
+            <div class="tooltip-query" onclick="toggleTooltip(this)">
                 ${shortQuery}
-                <span class="tooltip-content">${escapedFull}</span>
+                <div class="tooltip-content">${escapedFull}</div>
             </div>
         `;
     }

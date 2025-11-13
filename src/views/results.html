@@ -78,10 +78,7 @@
         white-space: pre-wrap; /* keep formatting */
     }
 
-    .tooltip-query:hover .tooltip-content {
-        visibility: visible;
-        opacity: 1;
-    }
+    
 
 </style>
 </head>
@@ -166,6 +163,17 @@
                 }
             }
             row.style.display = match ? '' : 'none';
+        }
+    }
+    function toggleTooltip(el) {
+        const tooltip = el.querySelector('.tooltip-content');
+        if (!tooltip) return;
+        if (tooltip.style.visibility === 'visible') {
+            tooltip.style.visibility = 'hidden';
+            tooltip.style.opacity = 0;
+        } else {
+            tooltip.style.visibility = 'visible';
+            tooltip.style.opacity = 1;
         }
     }
 </script>
