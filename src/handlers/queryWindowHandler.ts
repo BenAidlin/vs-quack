@@ -21,7 +21,7 @@ export function openQueryWindow(context: vscode.ExtensionContext, connection: Du
             switch (message.command) {
                 case 'runQuery':
                     try {
-                        const result = await handleQuery(context, message, connection);
+                        const result = handleQuery(context, message, connection);
                         await handleResult(result);
                         panel.webview.postMessage({ command: 'queryResult' });
                     } catch (error: any) {

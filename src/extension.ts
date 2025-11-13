@@ -45,11 +45,10 @@ export async function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage('No text selected.');
             return;
         }
-        // Perform your query logic here
-        vscode.window.showInformationMessage(`Running query: ${selectedText}`);
+
         try{
             //openQueryWindow(context, connection, selectedText);
-            const result = await handleQuery(context, {query: selectedText}, connection);
+            const result = handleQuery(context, { query: selectedText }, connection);
             await handleResult(result);
         }
         catch (error: any) {
@@ -66,7 +65,7 @@ export async function activate(context: vscode.ExtensionContext) {
         try{
             const query = createQueryFromPath(uri.fsPath);
             openQueryWindow(context, connection, query);
-            const result = await handleQuery(context, {query: query}, connection);
+            const result = handleQuery(context, { query: query }, connection);
             await handleResult(result);
 
         } catch (error: any) {
@@ -102,7 +101,7 @@ export async function activate(context: vscode.ExtensionContext) {
             .replace(/\\r/g, ' ')          // replace literal \r
             .replace(/\\n/g, ' ')          // replace literal \n
             .trim();                        // remove leading/trailing whitespace
-        const result = await handleQuery(context, { query: cleaned }, connection);
+        const result = handleQuery(context, { query: cleaned }, connection);
         await handleResult(result);
     };
 
@@ -159,7 +158,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const query = createQueryFromPath(filePath); // generate SELECT * FROM 'file'
 
         try {
-            const result = await handleQuery(context, { query: query }, connection);
+            const result = handleQuery(context, { query: query }, connection);
             await handleResult(result);
         } catch (err: any) {
             vscode.window.showErrorMessage(`Error executing query: ${err.message || err}`);
