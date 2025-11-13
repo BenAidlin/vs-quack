@@ -36,8 +36,8 @@ vscode in version 1.97 or higher.
 
 ## Known Issues
 
-* There is no limitation on returning results size/ nor db size - which passes the responsibility to the querying user. (SOLVED v.2*)
-* There are also no memory limits or CPU limits build in the extension.
+* There is no limitation on db size(if used for creating tables)
+* There are also no memory limits or CPU limits built in the extension.
    <br><br>
    However - these can be easily handled using the duckdb settings file option
 
@@ -58,15 +58,8 @@ Initial release of vs-quack. Simple querying capabilities.
 * Added query history capabilities.
 * Open query editor in editor/explorer queries.
 
-### 1.0.1
-
 * BUGFIX: Fixed settings not preserving issue.
 * Persisted in memory connection while extension is activated.
-
-### 1.1.130
-
-* update to duckdb 1.3.0.
-* change versioning strategy to show which duckdb version is utilized.
 
 ### 2.0.141
 
@@ -84,4 +77,6 @@ Initial release of vs-quack. Simple querying capabilities.
 
 ### 2.2.141
 
-* added query 
+* visual improvements to results window - more existing results warning, executed query, circular progress.
+* added query execution time to result window.
+* increase result preview to 999 results.
