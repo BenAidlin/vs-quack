@@ -3,7 +3,7 @@ import { getLoadingHtml, getResultsHtml } from '../views/getResultsHtml';
 
 let resultPanel: vscode.WebviewPanel | null = null;
 
-export async function handleResult(resultOrPromise: any | Promise<any>) {
+export async function handleResult(resultPromise: Promise<any>) {
     if (!resultPanel) {
         resultPanel = vscode.window.createWebviewPanel(
             'queryResult',
@@ -21,7 +21,7 @@ export async function handleResult(resultOrPromise: any | Promise<any>) {
 
     let result: any;
     try {
-        result = await resultOrPromise;
+        result = await resultPromise;
     } catch (err: any) {
         resultPanel.webview.html = `<h1>Error</h1><pre>${err}</pre>`;
         return;
