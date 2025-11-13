@@ -5,6 +5,8 @@ import { handleResult } from './handlers/resultHandler';
 import { openQueryWindow } from './handlers/queryWindowHandler';
 import { getQueryHistory } from './handlers/historyHandler';
 import { getDebugVariableValue } from './util/debuggingUtil';
+import { performance } from "perf_hooks";
+
 // import { QueryCodeLensProvider } from './features/queryCodeLensProvider';
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -48,8 +50,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
         try{
             //openQueryWindow(context, connection, selectedText);
+            const start = performance.now();
             const result = handleQuery(context, { query: selectedText }, connection);
-            await handleResult(result);
+            await handleResult(result, start, selectedText);
         }
         catch (error: any) {
             vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
@@ -65,8 +68,9 @@ export async function activate(context: vscode.ExtensionContext) {
         try{
             const query = createQueryFromPath(uri.fsPath);
             openQueryWindow(context, connection, query);
+            const start = performance.now();
             const result = handleQuery(context, { query: query }, connection);
-            await handleResult(result);
+            await handleResult(result, start, query);
 
         } catch (error: any) {
             vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
@@ -101,8 +105,9 @@ export async function activate(context: vscode.ExtensionContext) {
             .replace(/\\r/g, ' ')          // replace literal \r
             .replace(/\\n/g, ' ')          // replace literal \n
             .trim();                        // remove leading/trailing whitespace
+        const start = performance.now();
         const result = handleQuery(context, { query: cleaned }, connection);
-        await handleResult(result);
+        await handleResult(result, start, cleaned);
     };
 
     const runCurrentVariableQuery = vscode.commands.registerCommand('vs-quack.runCurrentVariableQuery', async () => {
@@ -158,8 +163,9 @@ export async function activate(context: vscode.ExtensionContext) {
         const query = createQueryFromPath(filePath); // generate SELECT * FROM 'file'
 
         try {
+            const start = performance.now();
             const result = handleQuery(context, { query: query }, connection);
-            await handleResult(result);
+            await handleResult(result, start, query);
         } catch (err: any) {
             vscode.window.showErrorMessage(`Error executing query: ${err.message || err}`);
         }

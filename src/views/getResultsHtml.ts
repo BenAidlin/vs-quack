@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function getResultsHtml(result: any[]): string {
+export function getResultsHtml(result: any[], durationSeconds?: number | null, queryText?: string | null): string {
     const htmlPath = path.join(__dirname, 'results.html');
     let html = '';
 
@@ -28,9 +28,40 @@ export function getResultsHtml(result: any[]): string {
         })
         .join('');
 
-    html = html.replace('{headers}', headers).replace('{rows}', rows);
+
+    let title = `<h1>Query Results</h1>`;
+
+    let meta = `<div class="query-meta" style="margin-top:10px; font-size:14px; color:#aaa;">`;
+
+    if (durationSeconds !== null && durationSeconds !== undefined) {
+        meta += `Executed in ${durationSeconds.toFixed(2)} seconds`;
+    }
+
+    if (queryText) {
+        const shortQuery = queryText.length > 200 ? queryText.slice(0, 200) + "..." : queryText;
+        const escapedFull = queryText
+            .replace(/&/g, "&amp;")
+            .replace(/"/g, "&quot;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+        meta += `
+            <br>
+            <div class="tooltip-query">
+                ${shortQuery}
+                <span class="tooltip-content">${escapedFull}</span>
+            </div>
+        `;
+    }
+
+    meta += `</div>`;
+
+    html = html
+        .replace('{title}', title + meta)
+        .replace('{headers}', headers)
+        .replace('{rows}', rows);
 
     return html;
+
 }
 
 

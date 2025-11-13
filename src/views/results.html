@@ -52,10 +52,42 @@
         cursor: default;
         color: #aaa;
     }
+    .tooltip-query {
+        position: relative;
+        display: inline-block;
+        color: #888;
+        cursor: pointer;
+        }
+
+    .tooltip-query .tooltip-content {
+        margin-top: 2px;
+        visibility: hidden;
+        opacity: 0;
+        width: 500px;
+        background-color: #2a2a2a;
+        color: #ddd;
+        text-align: left;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #444;
+        position: absolute;
+        z-index: 10;
+        top: 20px;
+        left: 0;
+        transition: opacity 0.15s ease-in-out;
+        white-space: pre-wrap; /* keep formatting */
+    }
+
+    .tooltip-query:hover .tooltip-content {
+        visibility: visible;
+        opacity: 1;
+    }
+
 </style>
 </head>
 <body>
-<h1>Query Results</h1>
+{title}
+<br><br>
 <input type="text" id="searchBox" placeholder="Search..." onkeyup="filterTable()">
 <table id="resultsTable">
     <thead>

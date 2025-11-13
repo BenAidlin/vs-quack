@@ -3,6 +3,7 @@ import { getQueryEditorHtml } from '../views/getQueryEditorHtml';
 import { handleQuery } from './queryHandler';
 import { handleResult } from './resultHandler';
 import { DuckDBConnection } from '@duckdb/node-api';
+import { performance } from "perf_hooks";
 
 export function openQueryWindow(context: vscode.ExtensionContext, connection: DuckDBConnection, queryText: string | null = null){
     const panel = vscode.window.createWebviewPanel(
@@ -21,8 +22,9 @@ export function openQueryWindow(context: vscode.ExtensionContext, connection: Du
             switch (message.command) {
                 case 'runQuery':
                     try {
+                        const start = performance.now();
                         const result = handleQuery(context, message, connection);
-                        await handleResult(result);
+                        await handleResult(result, start, message.query);
                         panel.webview.postMessage({ command: 'queryResult' });
                     } catch (error: any) {
                         panel.webview.postMessage({ command: 'queryError', error: error.message });
