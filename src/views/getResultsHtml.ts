@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function getResultsHtml(result: any[], durationSeconds?: number | null, queryText?: string | null): string {
+export function getResultsHtml(result: any[], moreRows: boolean, durationSeconds?: number | null, queryText?: string | null): string {
     const htmlPath = path.join(__dirname, 'results.html');
     let html = '';
 
@@ -32,7 +32,9 @@ export function getResultsHtml(result: any[], durationSeconds?: number | null, q
     let title = `<h1>Query Results</h1>`;
 
     let meta = `<div class="query-meta" style="margin-top:10px; font-size:14px; color:#aaa;">`;
-
+    if (moreRows) {
+        meta += `<em style="color:#ff5e4f;">Some rows are hidden for preview. <br>For full result use export via vs-quack: Run DuckDb Query.</em><br>`;
+    }
     if (durationSeconds !== null && durationSeconds !== undefined) {
         meta += `Executed in ${durationSeconds.toFixed(2)} seconds`;
     }
@@ -52,6 +54,7 @@ export function getResultsHtml(result: any[], durationSeconds?: number | null, q
             </div>
         `;
     }
+
 
     meta += `</div>`;
 

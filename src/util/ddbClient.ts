@@ -33,10 +33,8 @@ async function executeFileLineByLine(filePath: string, connection: DuckDBConnect
 }
 
 export const executeQuery: any = async (connection: DuckDBConnection, query: string) => {
-
-        const result = await connection.streamAndReadUntil(query, 500);
-        return result.getRowObjects();
-
+    const result = await connection.streamAndReadUntil(query, 1000);
+    return result.getRowObjects();
 };
 
 export async function ensureDbFile(context: vscode.ExtensionContext): Promise<string> {

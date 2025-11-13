@@ -33,9 +33,9 @@ export async function handleResult(resultPromise: Promise<any>, startQuery?: num
         return;
     }
 
-    if (!result) {
+    if (!result.data) {
         resultPanel.webview.html = `<h1>No results</h1>`;
         return;
     }
-    resultPanel.webview.html = getResultsHtml(result, durationSeconds, queryText);
+    resultPanel.webview.html = getResultsHtml(result.data, result.moreRows, durationSeconds, queryText);
 }

@@ -33,7 +33,7 @@ export async function handleQuery(
     const fullResult = await executeQuery(connection, message.query);
     if (!fullResult) { return null; }
 
-    const totalRows = Math.min(fullResult.length, 500);
+    const totalRows = Math.min(fullResult.length, 999);
     const preview: any[] = [];
 
     // Helper to normalize row values
@@ -53,5 +53,5 @@ export async function handleQuery(
 
     await saveQueryToHistory(context, message.query);
 
-    return preview;
+    return { data: preview, moreRows: fullResult.length > 999 };
 }
