@@ -81,3 +81,7 @@ Initial release of vs-quack. Simple querying capabilities.
 * added option to evaluate query variables while debugging.
 * added "Choose file" option.
 * moved row limitation to reader - 500 limit from the top.
+
+### 2.2.141
+
+* added query 
