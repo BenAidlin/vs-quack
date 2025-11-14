@@ -15,8 +15,14 @@ If you already use DuckDB with a `.duckdbrc` or other config file, load your set
 **Why this matters:**  
 This loads your DuckDB configuration (e.g., `httpfs`, AWS credentials, S3 endpoints, access keys).  
 ✔ **You must do this if you want to query files stored in S3.**  
-Once configured, vs-quack can query S3 paths directly, such as:<br><br>
+<br>Once configured, vs-quack can query S3 paths directly, such as:<br><br>
 `SELECT * FROM 's3://my-bucket/data.parquet';`
+
+You can also perform cross-file and cross-format operations, like joining a CSV with a Parquet file:<br>
+```SELECT a.*, b.*
+FROM 'local_file.csv' AS a
+JOIN 's3://bucket/data.parquet' AS b
+ON a.id = b.id;```
 
 For more information about duckdb's cloud integrations visit:<br>
 
@@ -57,6 +63,17 @@ Right-click a file in the **Explorer** →
 Use **`vs-quack: Choose File`** → select a file → opens a blank query ready to run.
 
 > 👀 Ideal for inspecting data files without writing queries first.
+
+---
+
+### 📝 Interactive Notebook Support
+
+Create a .duckdbnb file and run queries in a VS Code notebook powered by DuckDB:
+* Each cell can contain SQL queries (default cell type: sql)
+* Execute individual cells or the entire notebook
+* View query results inline, with full support for large datasets
+* Perfect for exploratory data analysis across multiple files
+>💡 Notebooks make it easy to mix queries, visualizations, and notes in one place.
 
 ---
 
@@ -116,10 +133,11 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ---
 
-### **2.2.141**
+### **3.0.141**
 
 - Visual improvements (warnings, executed query, progress indicator)
 - Added query execution time to results window
 - Increased result preview limit to **999 rows**
+- Introduced notebook support — interactive SQL notebooks with inline results
 
 ---
