@@ -2,7 +2,7 @@
   "name": "vs-quack",
   "displayName": "vs-quack",
   "description": "DuckDB based data processing tools for vscode.",
-  "version": "2.1.141",
+  "version": "3.0.141",
   "icon": "images/logo.png",
   "publisher": "BenAidlin",
   "repository": {
@@ -12,6 +12,20 @@
   "engines": {
     "vscode": "^1.97.0"
   },
+  "keywords": [
+    "duckdb",
+    "data",
+    "sql",
+    "csv",
+    "parquet",
+    "json",
+    "vscode",
+    "s3",
+    "data-analysis",
+    "data-processing",
+    "query",
+    "data-engineering"
+  ],
   "categories": [
     "Other"
   ],
