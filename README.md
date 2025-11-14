@@ -38,6 +38,7 @@ For more information about duckdb's cloud integrations visit:<br>
 
 ---
 
+### ⚡ Run DuckDB Queries
 
 You can execute queries in multiple ways — pick whichever suits your workflow:
 
@@ -71,6 +72,7 @@ Use **`vs-quack: Choose File`** → select a file → opens a blank query ready 
 
 ---
 
+### 📝 Interactive Notebook Support
 
 Create a .duckdbnb file and run queries in a VS Code notebook powered by DuckDB:
 * Each cell can contain SQL queries (default cell type: sql)
@@ -81,6 +83,7 @@ Create a .duckdbnb file and run queries in a VS Code notebook powered by DuckDB:
 
 ---
 
+### 🐛 Evaluate SQL from Debug Variables
 
 Evaluate SQL stored in variables during debugging:
 
@@ -88,12 +91,14 @@ Right-click → **`vs-quack: Evaluate Variable`**
 
 ---
 
+### 📁 Preview CSV / Parquet / JSON Files
 
 Use **`vs-quack: Choose File`** to select a data file and open it with an empty query.  
 Useful for quickly previewing CSV, Parquet, JSON, and other structured formats.
 
 ---
 
+### 📜 Query History
 
 View your last 50 executed queries, filter them, and reopen them in the editor with:  
 **`vs-quack: Show Query History`**
@@ -102,6 +107,7 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ## Requirements
 
+- macOs with apple silicon
 - Visual Studio Code **v1.97.0 or higher**
 
 ---
@@ -117,6 +123,7 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ## Release Notes
 
+### **2.0.141**
 
 - Updated to DuckDB 1.4.1
 - Results view styling updated to match VS Code UI
@@ -126,6 +133,7 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ---
 
+### **2.1.141**
 
 - Added evaluation of query variables during debugging
 - Added “Choose File” feature
@@ -133,6 +141,7 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ---
 
+### **3.0.141** - **3.1.141**
 
 - Visual improvements (warnings, executed query, progress indicator)
 - Added query execution time to results window
