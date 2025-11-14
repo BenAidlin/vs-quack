@@ -23,10 +23,12 @@ This loads your DuckDB configuration (e.g., `httpfs`, AWS credentials, S3 endpoi
 `SELECT * FROM 's3://my-bucket/data.parquet';`
 
 You can also perform cross-file and cross-format operations, like joining a CSV with a Parquet file:<br>
-```SELECT a.*, b.*
-FROM 'local_file.csv' AS a
+
+```
+SELECT * FROM 'local_file.csv' AS a
 JOIN 's3://bucket/data.parquet' AS b
-ON a.id = b.id;```
+ON a.id = b.id;
+```
 
 For more information about duckdb's cloud integrations visit:<br>
 
@@ -105,12 +107,14 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ## Requirements
 
+- macOs with apple silicon
 - Visual Studio Code **v1.97.0 or higher**
 
 ---
 
 ## Known Issues
 
+- Windows is currently unsupported
 - No internal DuckDB limit on database size (when creating tables)
 - No memory or CPU limits enforced by the extension  
    → You can control these through your DuckDB settings file
@@ -137,7 +141,7 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ---
 
-### **3.0.141**
+### **3.0.141** - **3.1.141**
 
 - Visual improvements (warnings, executed query, progress indicator)
 - Added query execution time to results window
