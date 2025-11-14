@@ -108,6 +108,7 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ## Known Issues
 
+- Windows is currently unsupported
 - No internal DuckDB limit on database size (when creating tables)
 - No memory or CPU limits enforced by the extension  
    → You can control these through your DuckDB settings file
