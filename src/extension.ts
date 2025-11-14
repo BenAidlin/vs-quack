@@ -202,7 +202,17 @@ export async function activate(context: vscode.ExtensionContext) {
             try {
                 const startTime = performance.now();
                 const result = await handleQuery(context, { query: cell.document.getText() }, connection);
-                const resultHtml = getResultsHtml(result.data, result.moreRows, (performance.now() - startTime) / 1000);
+
+                if (result.data && result.data.length >= 40) {
+                    const firstPart = result.data.slice(0, 20);
+                    const placeholder: any = {};
+                    const keys = Object.keys(result.data[0]);
+                    keys.forEach(key => {
+                        placeholder[key] = '...';
+                    });
+                    result.data = [...firstPart, placeholder];
+                }
+                const resultHtml = getResultsHtml(result.data, false, (performance.now() - startTime) / 1000);
 
                 execution.replaceOutput([
                     new vscode.NotebookCellOutput([
