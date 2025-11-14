@@ -2,7 +2,7 @@
   "name": "vs-quack",
   "displayName": "vs-quack",
   "description": "DuckDB based data processing tools for VS Code.",
-  "version": "3.0.141",
+  "version": "3.1.141",
   "icon": "images/logo.png",
   "publisher": "BenAidlin",
   "repository": {
