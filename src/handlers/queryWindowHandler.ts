@@ -15,7 +15,13 @@ export function openQueryWindow(context: vscode.ExtensionContext, connection: Du
             retainContextWhenHidden: true,
         }
     );
+
     panel.webview.html = getQueryEditorHtml(queryText);
+    panel.iconPath = vscode.Uri.joinPath(
+        context.extensionUri, // root of your extension
+        'images',
+        'logo.png'
+    );
 
     panel.webview.onDidReceiveMessage(
         async (message) => {
@@ -24,7 +30,7 @@ export function openQueryWindow(context: vscode.ExtensionContext, connection: Du
                     try {
                         const start = performance.now();
                         const result = handleQuery(context, message, connection);
-                        await handleResult(result, start, message.query);
+                        await handleResult(context, result, start, message.query);
                         panel.webview.postMessage({ command: 'queryResult' });
                     } catch (error: any) {
                         panel.webview.postMessage({ command: 'queryError', error: error.message });

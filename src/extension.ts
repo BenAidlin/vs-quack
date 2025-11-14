@@ -52,7 +52,7 @@ export async function activate(context: vscode.ExtensionContext) {
             //openQueryWindow(context, connection, selectedText);
             const start = performance.now();
             const result = handleQuery(context, { query: selectedText }, connection);
-            await handleResult(result, start, selectedText);
+            await handleResult(context, result, start, selectedText);
         }
         catch (error: any) {
             vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
@@ -70,7 +70,7 @@ export async function activate(context: vscode.ExtensionContext) {
             openQueryWindow(context, connection, query);
             const start = performance.now();
             const result = handleQuery(context, { query: query }, connection);
-            await handleResult(result, start, query);
+            await handleResult(context, result, start, query);
 
         } catch (error: any) {
             vscode.window.showErrorMessage(`Error executing query: ${error.message}`);
@@ -107,7 +107,7 @@ export async function activate(context: vscode.ExtensionContext) {
             .trim();                        // remove leading/trailing whitespace
         const start = performance.now();
         const result = handleQuery(context, { query: cleaned }, connection);
-        await handleResult(result, start, cleaned);
+        await handleResult(context, result, start, cleaned);
     };
 
     const runCurrentVariableQuery = vscode.commands.registerCommand('vs-quack.runCurrentVariableQuery', async () => {
@@ -165,7 +165,7 @@ export async function activate(context: vscode.ExtensionContext) {
         try {
             const start = performance.now();
             const result = handleQuery(context, { query: query }, connection);
-            await handleResult(result, start, query);
+            await handleResult(context, result, start, query);
         } catch (err: any) {
             vscode.window.showErrorMessage(`Error executing query: ${err.message || err}`);
         }

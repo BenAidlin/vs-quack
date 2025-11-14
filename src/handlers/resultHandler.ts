@@ -4,7 +4,7 @@ import { performance } from "perf_hooks";
 
 let resultPanel: vscode.WebviewPanel | null = null;
 
-export async function handleResult(resultPromise: Promise<any>, startQuery?: number | null, queryText?: string | null) {
+export async function handleResult(context: vscode.ExtensionContext, resultPromise: Promise<any>, startQuery?: number | null, queryText?: string | null) {
     if (!resultPanel) {
         resultPanel = vscode.window.createWebviewPanel(
             'queryResult',
@@ -17,7 +17,11 @@ export async function handleResult(resultPromise: Promise<any>, startQuery?: num
     }
 
     resultPanel.reveal(vscode.ViewColumn.Two);
-
+    resultPanel.iconPath = vscode.Uri.joinPath(
+        context.extensionUri, // root of your extension
+        'images',
+        'logo.png'
+    );
     resultPanel.webview.html = getLoadingHtml();
 
     let result: any;
