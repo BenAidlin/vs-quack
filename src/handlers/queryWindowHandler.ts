@@ -3,6 +3,7 @@ import { getQueryEditorHtml } from '../views/getQueryEditorHtml';
 import { handleQuery } from './queryHandler';
 import { handleResult } from './resultHandler';
 import { DuckDBConnection } from '@duckdb/node-api';
+import { performance } from "perf_hooks";
 
 export function openQueryWindow(context: vscode.ExtensionContext, connection: DuckDBConnection, queryText: string | null = null){
     const panel = vscode.window.createWebviewPanel(
@@ -14,15 +15,22 @@ export function openQueryWindow(context: vscode.ExtensionContext, connection: Du
             retainContextWhenHidden: true,
         }
     );
+
     panel.webview.html = getQueryEditorHtml(queryText);
+    panel.iconPath = vscode.Uri.joinPath(
+        context.extensionUri, // root of your extension
+        'images',
+        'logo.png'
+    );
 
     panel.webview.onDidReceiveMessage(
         async (message) => {
             switch (message.command) {
                 case 'runQuery':
                     try {
-                        const result = await handleQuery(context, message, connection);
-                        await handleResult(result);
+                        const start = performance.now();
+                        const result = handleQuery(context, message, connection);
+                        await handleResult(context, result, start, message.query);
                         panel.webview.postMessage({ command: 'queryResult' });
                     } catch (error: any) {
                         panel.webview.postMessage({ command: 'queryError', error: error.message });

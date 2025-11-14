@@ -1,8 +1,8 @@
 {
   "name": "vs-quack",
   "displayName": "vs-quack",
-  "description": "DuckDB based data processing tools for vscode.",
-  "version": "2.1.141",
+  "description": "DuckDB based data processing tools for VS Code.",
+  "version": "3.0.141",
   "icon": "images/logo.png",
   "publisher": "BenAidlin",
   "repository": {
@@ -12,68 +12,67 @@
   "engines": {
     "vscode": "^1.97.0"
   },
+  "keywords": [
+    "duckdb",
+    "data",
+    "sql",
+    "csv",
+    "parquet",
+    "json",
+    "vscode",
+    "s3",
+    "data-analysis",
+    "data-processing",
+    "query",
+    "data-engineering",
+    "notebook"
+  ],
   "categories": [
     "Other"
   ],
   "activationEvents": [
     "onLanguage:python",
-    "onLanguage:sql"
+    "onLanguage:sql",
+    "onNotebook:*"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
-      {
-        "command": "vs-quack.runQuery",
-        "title": "vs-quack: Run DuckDb Query"
-      },
-      {
-        "command": "vs-quack.setSettings",
-        "title": "vs-quack: Set DuckDb Settings"
-      },
-      {
-        "command": "vs-quack.runTextSelectionQuery",
-        "title": "vs-quack: Run Selected Text as Query"
-      },
-      {
-        "command": "vs-quack.runQueryOnExplorer",
-        "title": "vs-quack: Run Query on File"
-      },
-      {
-        "command": "vs-quack.showQueryHistory",
-        "title": "vs-quack: Show Query History"
-      },
-      
-      {
-        "command": "vs-quack.runCurrentVariableQuery",
-        "title": "vs-quack: Evaluate Variable"
-      },
-      {
-        "command": "vs-quack.runQueryOnFileDialog",
-        "title": "vs-quack: Choose file"
-      }
-
+      { "command": "vs-quack.runQuery", "title": "vs-quack: Run DuckDb Query" },
+      { "command": "vs-quack.setSettings", "title": "vs-quack: Set DuckDb Settings" },
+      { "command": "vs-quack.runTextSelectionQuery", "title": "vs-quack: Run Selected Text as Query" },
+      { "command": "vs-quack.runQueryOnExplorer", "title": "vs-quack: Run Query on File" },
+      { "command": "vs-quack.showQueryHistory", "title": "vs-quack: Show Query History" },
+      { "command": "vs-quack.runCurrentVariableQuery", "title": "vs-quack: Evaluate Variable" },
+      { "command": "vs-quack.runQueryOnFileDialog", "title": "vs-quack: Choose file" }
     ],
     "menus": {
       "editor/context": [
-        {
-          "command": "vs-quack.runTextSelectionQuery",
-          "when": "editorHasSelection",
-          "group": "navigation"
-        },
-        {
-          "command": "vs-quack.runCurrentVariableQuery",
-          "when": "debugType && debugState == 'stopped'",
-          "group": "navigation"
-        }
+        { "command": "vs-quack.runTextSelectionQuery", "when": "editorHasSelection", "group": "navigation" },
+        { "command": "vs-quack.runCurrentVariableQuery", "when": "debugType && debugState == 'stopped'", "group": "navigation" }
       ],
       "explorer/context": [
-        {
-          "command": "vs-quack.runQueryOnExplorer",
-          "when": "resourceExtname =~ /\\.(json|csv|parquet)$/i",
-          "group": "navigation"
-        }
+        { "command": "vs-quack.runQueryOnExplorer", "when": "resourceExtname =~ /\\.(json|csv|parquet)$/i", "group": "navigation" }
       ]
-    }
+    },
+    "notebooks": [
+        {
+            "type": "vs-quack-notebook",
+            "displayName": "vs-quack Notebook",
+            "selector": [
+                {
+                    "filenamePattern": "*.duckdbnb"
+                }
+            ]
+        }
+    ],
+    "notebookProvider": [
+      {
+        "viewType": "vs-quack-notebook",
+        "displayName": "VS Quack Notebook",
+        "filenamePattern": "**/*.duckdbnb"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

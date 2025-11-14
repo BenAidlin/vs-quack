@@ -1,83 +1,147 @@
 # vs-quack
 
-vs-quack is a DuckDB based data processing tool for vs code.
+vs-quack is a lightweight, fast, and convenient DuckDB-powered data exploration and processing extension for Visual Studio Code.  
+Run SQL queries, preview data files, inspect variables during debugging, and view query history — all backed by DuckDB.
+
+<div style="text-align: center;">
+    <img src="images/demo3.gif" alt="Demo GIF" height="300">
+</div>
+
+---
 
 ## Features
 
-First - if you are already using duckdb and have a .duckdbrc file or other config file in use, please configure it using `vs-quack: Set DuckDb Settings` in the command palette.
+### 🔧 [Optionally] Configure DuckDB (Required for S3)
 
-Next - go ahead and start querying you data using duckdb queries.
+If you already use DuckDB with a `.duckdbrc` or other config file, load your settings via:  
+**`vs-quack: Set DuckDb Settings`** (Command Palette)
 
-Querying from a prompt (`vs-quack: Run DuckDb Query` in the command palette):
+**Why this matters:**  
+This loads your DuckDB configuration (e.g., `httpfs`, AWS credentials, S3 endpoints, access keys).  
+✔ **You must do this if you want to query files stored in S3.**  
+<br>Once configured, vs-quack can query S3 paths directly, such as:<br><br>
+`SELECT * FROM 's3://my-bucket/data.parquet';`
 
-![alt text](images/run_ddb_query.png)
+You can also perform cross-file and cross-format operations, like joining a CSV with a Parquet file:<br>
+```SELECT a.*, b.*
+FROM 'local_file.csv' AS a
+JOIN 's3://bucket/data.parquet' AS b
+ON a.id = b.id;```
 
-Querying from the editor (right click in editor -> `vs-quack: Run Selected Text as Query`):
+For more information about duckdb's cloud integrations visit:<br>
 
-![alt text](images/run_from_editor.png)
+* https://duckdb.org/docs/stable/core_extensions/httpfs/s3api
+* https://duckdb.org/docs/stable/guides/network_cloud_storage/gcs_import
+* https://duckdb.org/docs/stable/core_extensions/azure
 
-Querying from the explorer(right click with explorer focus -> `vs-quack: Run Query on Explorer`):
+---
 
-![alt text](images/run_query_on_file.png)
+### ⚡ Run DuckDB Queries
 
-Evaluating from a variable name is now also possible through either code lense or right click -> `vs-quack: Evaluate Variable`:
+You can execute queries in multiple ways — pick whichever suits your workflow:
 
-![alt text](images/query_from_variable.png)
+#### 1️⃣ Run a query from a prompt
 
-Choosing a file and running an empty query on it can be done using: `vs-quack: Choose file` - this can be used as parquet, csv or json preview tool.
+Open the **Command Palette** →  
+**`vs-quack: Run DuckDb Query`**  
+Type your SQL query and select between execute, or export in different formats.
 
-You can also view the query history (up to 50 queries), filter them, and open them in editor, using: `vs-quack: Show Query History`.
+> 💡 Perfect for ad-hoc queries or testing small snippets, as well as data importing.
+
+#### 2️⃣ Run selected text as a query in the editor
+
+Highlight the SQL text in your editor → Right-click →  
+**`vs-quack: Run Selected Text as Query`**
+
+> 🔹 Great for working within scripts or notebooks.
+
+#### 3️⃣ Run a query on a file via Explorer
+
+Right-click a file in the **Explorer** →  
+**`vs-quack: Run Query on Explorer`**
+
+> 🗄️ Instantly query CSV, Parquet, JSON, or any DuckDB-supported file.
+
+#### 4️⃣ Quick preview with “Choose File”
+
+Use **`vs-quack: Choose File`** → select a file → opens a blank query ready to run.
+
+> 👀 Ideal for inspecting data files without writing queries first.
+
+---
+
+### 📝 Interactive Notebook Support
+
+Create a .duckdbnb file and run queries in a VS Code notebook powered by DuckDB:
+* Each cell can contain SQL queries (default cell type: sql)
+* Execute individual cells or the entire notebook
+* View query results inline, with full support for large datasets
+* Perfect for exploratory data analysis across multiple files
+>💡 Notebooks make it easy to mix queries, visualizations, and notes in one place.
+
+---
+
+### 🐛 Evaluate SQL from Debug Variables
+
+Evaluate SQL stored in variables during debugging:
+
+Right-click → **`vs-quack: Evaluate Variable`**
+
+---
+
+### 📁 Preview CSV / Parquet / JSON Files
+
+Use **`vs-quack: Choose File`** to select a data file and open it with an empty query.  
+Useful for quickly previewing CSV, Parquet, JSON, and other structured formats.
+
+---
+
+### 📜 Query History
+
+View your last 50 executed queries, filter them, and reopen them in the editor with:  
+**`vs-quack: Show Query History`**
+
+---
 
 ## Requirements
 
-vscode in version 1.97 or higher.
+- Visual Studio Code **v1.97.0 or higher**
 
-## Extension Settings
+---
 
 ## Known Issues
 
-* There is no limitation on returning results size/ nor db size - which passes the responsibility to the querying user. (SOLVED v.2*)
-* There are also no memory limits or CPU limits build in the extension.
-   <br><br>
-   However - these can be easily handled using the duckdb settings file option
+- No internal DuckDB limit on database size (when creating tables)
+- No memory or CPU limits enforced by the extension  
+   → You can control these through your DuckDB settings file
+
+---
 
 ## Release Notes
 
-### 0.0.1
+### **2.0.141**
 
-Initial release of vs-quack. Simple querying capabilities.
+- Updated to DuckDB 1.4.1
+- Results view styling updated to match VS Code UI
+- Only one results panel remains open at a time
+- Limited results to top 200 + bottom 200 rows
+- Disabled auto-open when running queries from editor selection
 
-### 0.0.2
+---
 
-* Added csv, json export options.
-* Added querying from explorer option for csv/json/parquet files.
-* Added option to query from editor.
+### **2.1.141**
 
-### 1.0.0
+- Added evaluation of query variables during debugging
+- Added “Choose File” feature
+- Moved row limitation into the reader (top 500 rows)
 
-* Added query history capabilities.
-* Open query editor in editor/explorer queries.
+---
 
-### 1.0.1
+### **3.0.141**
 
-* BUGFIX: Fixed settings not preserving issue.
-* Persisted in memory connection while extension is activated.
+- Visual improvements (warnings, executed query, progress indicator)
+- Added query execution time to results window
+- Increased result preview limit to **999 rows**
+- Introduced notebook support — interactive SQL notebooks with inline results
 
-### 1.1.130
-
-* update to duckdb 1.3.0.
-* change versioning strategy to show which duckdb version is utilized.
-
-### 2.0.141
-
-* update to duckdb 1.4.1
-* change view to be consistent with vscode style.
-* results query panels don't pile up, keeps only 1 results panel.
-* limit to top 200 bottom 200 results.
-* don't open query window when querying text from editor.
-
-### 2.1.141
-
-* added option to evaluate query variables while debugging.
-* added "Choose file" option.
-* moved row limitation to reader - 500 limit from the top.
+---
