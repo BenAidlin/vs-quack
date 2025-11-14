@@ -6,8 +6,8 @@ import { openQueryWindow } from './handlers/queryWindowHandler';
 import { getQueryHistory } from './handlers/historyHandler';
 import { getDebugVariableValue } from './util/debuggingUtil';
 import { performance } from "perf_hooks";
-
-// import { QueryCodeLensProvider } from './features/queryCodeLensProvider';
+import SampleSerializer from './features/notebookSerializer';
+import { getResultsHtml } from './views/getResultsHtml';
 
 export async function activate(context: vscode.ExtensionContext) {
     const connection = await getConnection(context.globalState.get('duckDbSettingsPath', null));
@@ -171,13 +171,6 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
-
-    // context.subscriptions.push(
-    //     vscode.languages.registerCodeLensProvider(
-    //         { language: 'python' },
-    //         new QueryCodeLensProvider()
-    //     )
-    // );
     context.subscriptions.push(runQueryDisposable);
     context.subscriptions.push(setDuckDbSettings);
     context.subscriptions.push(runSelectedTextQueryCommand);
@@ -186,4 +179,48 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(runCurrentVariableQuery);
     context.subscriptions.push(runCurrentVariableQueryOnVariable);
     context.subscriptions.push(runQueryOnFileDialog);
+
+    // -------------------------
+    // Notebook Controller
+    // -------------------------
+    context.subscriptions.push(
+        vscode.workspace.registerNotebookSerializer('vs-quack-notebook', new SampleSerializer())
+    );
+
+    const controller = vscode.notebooks.createNotebookController(
+        'vs-quack-notebook-controller',
+        'vs-quack-notebook',
+        'VS Quack DuckDB Notebook'
+    );
+
+    controller.supportedLanguages = ['sql']; // optional, highlight SQL
+    controller.executeHandler = async (cells, notebook, controller) => {
+        for (const cell of cells) {
+            const execution = controller.createNotebookCellExecution(cell);
+            execution.start(Date.now());
+
+            try {
+                const startTime = performance.now();
+                const result = await handleQuery(context, { query: cell.document.getText() }, connection);
+                const resultHtml = getResultsHtml(result.data, result.moreRows, (performance.now() - startTime) / 1000);
+
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput([
+                        vscode.NotebookCellOutputItem.text(resultHtml, 'text/html')
+                    ])
+                ]);
+            } catch (err: any) {
+                execution.replaceOutput([
+                    new vscode.NotebookCellOutput([
+                        vscode.NotebookCellOutputItem.error(err)
+                    ])
+                ]);
+            }
+
+            execution.end(true);
+        }
+    };
+
+    context.subscriptions.push(controller);
+
 }
