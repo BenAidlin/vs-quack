@@ -6,7 +6,7 @@ vs-quack is a DuckDB based data processing tool for vs code.
 
 First - if you are already using duckdb and have a .duckdbrc file or other config file in use, please configure it using `vs-quack: Set DuckDb Settings` in the command palette.
 
-Next - go ahead and start querying you data using duckdb queries.
+Next - go ahead and start querying your data using duckdb queries.
 
 Querying from a prompt (`vs-quack: Run DuckDb Query` in the command palette):
 
@@ -36,30 +36,11 @@ vscode in version 1.97 or higher.
 
 ## Known Issues
 
-* There is no limitation on db size(if used for creating tables)
+* There is no limitation on db size(if used for creating tables).
 * There are also no memory limits or CPU limits built in the extension.
-   <br><br>
-   However - these can be easily handled using the duckdb settings file option
+However - these can be easily handled using the duckdb settings file option
 
 ## Release Notes
-
-### 0.0.1
-
-Initial release of vs-quack. Simple querying capabilities.
-
-### 0.0.2
-
-* Added csv, json export options.
-* Added querying from explorer option for csv/json/parquet files.
-* Added option to query from editor.
-
-### 1.0.0
-
-* Added query history capabilities.
-* Open query editor in editor/explorer queries.
-
-* BUGFIX: Fixed settings not preserving issue.
-* Persisted in memory connection while extension is activated.
 
 ### 2.0.141
 
