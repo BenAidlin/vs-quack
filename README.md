@@ -3,6 +3,10 @@
 vs-quack is a lightweight, fast, and convenient DuckDB-powered data exploration and processing extension for Visual Studio Code.  
 Run SQL queries, preview data files, inspect variables during debugging, and view query history — all backed by DuckDB.
 
+<div style="text-align: center;">
+    <img src="images/demo3.gif" alt="Demo GIF" height="300">
+</div>
+
 ---
 
 ## Features
