@@ -8,8 +8,10 @@ import { getDebugVariableValue } from './util/debuggingUtil';
 import { performance } from "perf_hooks";
 import SampleSerializer from './features/notebookSerializer';
 import { getResultsHtml } from './views/getResultsHtml';
+import { setupDuckDBInNodeModules } from './features/duckdbModuleSetup';
 
 export async function activate(context: vscode.ExtensionContext) {
+    setupDuckDBInNodeModules(context);
     const connection = await getConnection(context.globalState.get('duckDbSettingsPath', null));
     const runQueryDisposable = vscode.commands.registerCommand('vs-quack.runQuery', async () => {
         openQueryWindow(context, connection);

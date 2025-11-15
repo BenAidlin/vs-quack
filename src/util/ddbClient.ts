@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { DuckDBConnection } from '@duckdb/node-api';
+
 
 
 const fs = require('fs');
 const readline = require('readline');
 
-export async function getConnection(settingsPath: string | null | undefined = null): Promise<DuckDBConnection> {
+export async function getConnection(settingsPath: string | null | undefined = null): Promise<any> {
+    const { DuckDBConnection } = require("@duckdb/node-api");
     const connection = await DuckDBConnection.create();
     if (settingsPath){
         try {
@@ -19,7 +20,7 @@ export async function getConnection(settingsPath: string | null | undefined = nu
     return connection;
 };
 
-async function executeFileLineByLine(filePath: string, connection: DuckDBConnection) {
+async function executeFileLineByLine(filePath: string, connection: any) {
     const fileStream = fs.createReadStream(filePath);
 
     const rl = readline.createInterface({
@@ -32,7 +33,7 @@ async function executeFileLineByLine(filePath: string, connection: DuckDBConnect
     }
 }
 
-export const executeQuery: any = async (connection: DuckDBConnection, query: string) => {
+export const executeQuery: any = async (connection: any, query: string) => {
     const result = await connection.streamAndReadUntil(query, 1000);
     return result.getRowObjects();
 };
