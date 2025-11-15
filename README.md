@@ -24,7 +24,7 @@ This loads your DuckDB configuration (e.g., `httpfs`, AWS credentials, S3 endpoi
 
 You can also perform cross-file and cross-format operations, like joining a CSV with a Parquet file:<br>
 
-```
+```sh
 SELECT * FROM 'local_file.csv' AS a
 JOIN 's3://bucket/data.parquet' AS b
 ON a.id = b.id;
@@ -75,11 +75,13 @@ Use **`vs-quack: Choose File`** → select a file → opens a blank query ready 
 ### 📝 Interactive Notebook Support
 
 Create a .duckdbnb file and run queries in a VS Code notebook powered by DuckDB:
+
 * Each cell can contain SQL queries (default cell type: sql)
 * Execute individual cells or the entire notebook
 * View query results inline, with full support for large datasets
 * Perfect for exploratory data analysis across multiple files
->💡 Notebooks make it easy to mix queries, visualizations, and notes in one place.
+
+> 💡 Notebooks make it easy to mix queries, visualizations, and notes in one place.
 
 ---
 
@@ -107,14 +109,13 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 
 ## Requirements
 
-- macOs with apple silicon
 - Visual Studio Code **v1.97.0 or higher**
 
 ---
 
 ## Known Issues
 
-- Windows is currently unsupported
+- Currently, only macOS (darwin-arm64) and Windows (win32-x64) are supported; Linux is not yet supported.
 - No internal DuckDB limit on database size (when creating tables)
 - No memory or CPU limits enforced by the extension  
    → You can control these through your DuckDB settings file
@@ -149,3 +150,7 @@ View your last 50 executed queries, filter them, and reopen them in the editor w
 - Introduced notebook support — interactive SQL notebooks with inline results
 
 ---
+
+### **4.0.141**
+
+Added Windows support through native node modules.
