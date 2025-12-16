@@ -17,6 +17,10 @@ export async function activate(context: vscode.ExtensionContext) {
         openQueryWindow(context, connection);
     });
 
+    const interruptConn = vscode.commands.registerCommand('vs-quack.interruptConn', async () => {
+        connection.interrupt();
+    });
+
     const setDuckDbSettings = vscode.commands.registerCommand('vs-quack.setSettings', async () => {
         const fileUri = await vscode.window.showOpenDialog({
             canSelectMany: false,
@@ -174,6 +178,7 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     context.subscriptions.push(runQueryDisposable);
+    context.subscriptions.push(interruptConn);
     context.subscriptions.push(setDuckDbSettings);
     context.subscriptions.push(runSelectedTextQueryCommand);
     context.subscriptions.push(runQueryOnFileCommand);
@@ -200,7 +205,15 @@ export async function activate(context: vscode.ExtensionContext) {
         for (const cell of cells) {
             const execution = controller.createNotebookCellExecution(cell);
             execution.start(Date.now());
+            const token = execution.token;
 
+            token.onCancellationRequested(async () => {
+                execution.end(false);
+                const choice = await vscode.window.showWarningMessage('Direct query cancelling is not optional, interrupt connection?', "Interrupt");
+                if (choice === "Interrupt") {
+                    connection.interrupt();
+                }
+            });
             try {
                 const startTime = performance.now();
                 const result = await handleQuery(context, { query: cell.document.getText() }, connection);

@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { executeQuery, wrapQueryWithCopyTo } from '../util/ddbClient';
 import { saveQueryToHistory } from './historyHandler';
 import { DuckDBConnection } from '@duckdb/node-api';
+import { showBusyWarning } from '../util/ddbBusyHandler';
 
 export async function handleQuery(
     context: vscode.ExtensionContext,
@@ -23,14 +24,14 @@ export async function handleQuery(
         }
 
         message.query = wrapQueryWithCopyTo(message.query, destination[0].fsPath, message.type);
-        await executeQuery(connection, message.query);
+        await showBusyWarning(connection, () => executeQuery(connection, message.query));
         await saveQueryToHistory(context, message.query);
 
         return { message: `Query exported to ${destination[0].fsPath}` };
     }
 
     // Regular query
-    const fullResult = await executeQuery(connection, message.query);
+    const fullResult = await showBusyWarning(connection, () => executeQuery(connection, message.query)) as any;
     if (!fullResult) { return null; }
 
     const totalRows = Math.min(fullResult.length, 999);

@@ -2,7 +2,7 @@
   "name": "vs-quack",
   "displayName": "vs-quack",
   "description": "DuckDB based data processing tools for VS Code.",
-  "version": "4.0.141",
+  "version": "4.1.143",
   "icon": "images/logo.png",
   "publisher": "BenAidlin",
   "repository": {
@@ -41,6 +41,10 @@
       {
         "command": "vs-quack.runQuery",
         "title": "vs-quack: Run DuckDb Query"
+      },
+      {
+        "command": "vs-quack.interruptConn",
+        "title": "vs-quack: Interrupt DuckDb Connection"
       },
       {
         "command": "vs-quack.setSettings",
@@ -116,7 +120,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@duckdb/node-api": "^1.4.1-r.4",
+    "@duckdb/node-api": "1.4.3-r.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/vscode": "^1.97.0",
